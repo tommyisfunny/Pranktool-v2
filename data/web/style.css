@@ -1,0 +1,53 @@
+body {
+    background-color: black;
+    color: red;
+    font-family: 'Courier New', Courier, monospace
+}
+
+dialog {
+    color: red;
+    background-color: black;
+    border-style: solid;
+    border-color: gray;
+    border-radius: 10px;
+}
+
+input, select {
+    width: 100%;
+}
+
+table {
+    border-spacing: 10px 5px;
+}
+
+#deleteConfirmButtonsDiv {
+    display: flex;
+    justify-content: space-evenly;
+}
+
+input, button, select, .grow-wrap > textarea, .grow-wrap::after {
+    background-color: darkgray;
+    color: black;
+    font-family: 'Courier New';
+    border-color: gray;
+    border-style: solid;
+}
+
+.grow-wrap {
+    display: grid;
+}
+.grow-wrap::after {
+    content: attr(data-replicated-value) " ";
+    white-space: pre-wrap;
+    visibility: hidden;
+}
+.grow-wrap > textarea {
+    resize: none;
+    overflow: hidden;
+}
+.grow-wrap > textarea, .grow-wrap::after {
+    /* Identical styling required!! */
+    padding: 0.5rem;
+    grid-area: 1 / 1 / 2 / 2;
+}
+  

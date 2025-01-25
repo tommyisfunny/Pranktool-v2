@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pranktool</title>
+    <link rel="stylesheet" type="text/css" href="style.css"/>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+</head>
+<body>
+    <h1>Pranktool</h1>
+    <h2>Settings</h2>
+    <table>
+    <tr>
+        <th>Autostart:</th><th><select id="autostart"><option value="OFF">OFF</option> </select></th>
+    </tr>
+    <tr>
+        <th>Button 1:</th><th><select id="button1"></select></th>
+    </tr>
+    <tr>
+        <th>Button 2:</th><th><select id="button2"></select></th>
+    </tr>
+    <tr>
+        <th>Button 3:</th><th><select id="button3"></select></th>
+    </tr>
+    <tr>
+        <th>Button 4:</th><th><select id="button4"></select></th>
+    </tr>
+    <tr>
+        <th>Standart delay:</th><th><input type="number" id="standartDelay" min="0"></th>
+    </tr>
+    <tr>
+        <th>SSID:</th><th><input type="text" id="SSID"></th>
+    </tr>
+    <tr>
+        <th>Password:</th><th><input type="text" id="password"></th>
+    </tr>
+    <tr>
+        <th>Hidden:</th><th><input type="checkbox" id="hidden"></th>
+    </tr>
+    </table>
+
+    <button id="changeSettings">Apply changes</button>
+    <h2>Available payloads</h2>
+    <div id="payloads"></div>
+
+    <h2>Upload new payloads</h2>
+
+
+    <button>
+        <label for="payloadUploadSelector">Choose file</label>
+    </button>
+    <input type="file" id="payloadUploadSelector" hidden/>
+   
+
+
+
+    <dialog id="settingsSavedDialog">
+        Your settings are saved.
+    </dialog>
+    <dialog id="confirmDeleteDialog">
+        <div id="confirmDeleteText"></div>
+        <div id="deleteConfirmButtonsDiv">
+            <button id="delete">Delete</button>
+            <button id="cancelDelete">Cancel</button>
+        </div>
+    </dialog>
+
+    <script src="script.js"></script>
+</body>
+</html>
