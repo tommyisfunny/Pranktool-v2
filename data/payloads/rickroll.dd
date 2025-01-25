@@ -1,10 +1,9 @@
-DELAY 3500
 GUI r
 DELAY 200
 STRING cmd
 ENTER
 DELAY 500
-STRING cd %temp%
+STRING cd %tmp%
 DELAY 100
 ENTER
 STRING del rickyou.vbs

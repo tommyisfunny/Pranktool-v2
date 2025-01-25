@@ -60,10 +60,12 @@ void handleUpload(AsyncWebServerRequest *request, String filename, size_t index,
 }
 
 String processor(const String& var) {
+  Serial.println("Processor: " + var);
   if(var == "FILECONTENT"){
     File fs = SPIFFS.open("/payloads/" + editPayload);
     String fileContent = fs.readString();
     fs.close();
+    fileContent.replace("%", "%%");
     return fileContent;
   }
   if(var == "FILENAME"){
