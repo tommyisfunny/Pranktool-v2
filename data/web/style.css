@@ -13,16 +13,17 @@ dialog {
 }
 
 input, select {
-    width: 100%;
+    width: 95%;
 }
 
 table {
     border-spacing: 10px 5px;
 }
 
-#deleteConfirmButtonsDiv {
+.cancelOKButtons {
     display: flex;
     justify-content: space-evenly;
+    margin: 2px;
 }
 
 input, button, select, .grow-wrap > textarea, .grow-wrap::after {

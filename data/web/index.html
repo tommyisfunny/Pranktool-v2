@@ -50,27 +50,36 @@
     <h2>Available payloads</h2>
     <div id="payloads"></div>
 
-    <h2>Upload new payloads</h2>
+    <h2>New payloads</h2>
 
 
     <button>
-        <label for="payloadUploadSelector">Choose file</label>
+        <label for="payloadUploadSelector">Upload new payload</label>
     </button>
     <input type="file" id="payloadUploadSelector" hidden/>
    
-
+    <button id="createPayload">Create new payload</button>
 
 
     <dialog id="settingsSavedDialog">
         Your settings are saved.
     </dialog>
+
     <dialog id="confirmDeleteDialog">
         <div id="confirmDeleteText"></div>
-        <div id="deleteConfirmButtonsDiv">
+        <div class="cancelOKButtons">
             <button id="delete">Delete</button>
             <button id="cancelDelete">Cancel</button>
         </div>
     </dialog>
+
+    <dialog id="createPayloadDialog">
+        <div>Enter the name of the new payload:</div>
+        <input type="text" id="newPayloadName">
+        <div class="cancelOKButtons">
+            <button id="create">Create</button>
+            <button id="cancelCreate">Cancel</button>
+        </div>
 
     <script src="script.js"></script>
 </body>

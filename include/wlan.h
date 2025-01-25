@@ -66,6 +66,9 @@ String processor(const String& var) {
     fs.close();
     return fileContent;
   }
+  if(var == "FILENAME"){
+    return editPayload;
+  }
 
   return var;
 }
@@ -179,6 +182,17 @@ void setupWlan(){
         }
 
         request->send(SPIFFS, "/web/edit.html", "text/html", false, processor);
+    });
+
+    server.on("/createPayload", HTTP_GET, [] (AsyncWebServerRequest *request) {
+        debugOutln("Create payload request:");
+        if(request->hasArg("name")){
+          String name = request->getParam("name")->value();
+          debugOutln("creating " + name);
+          SPIFFS.open("/payloads/" + name, "w").close();
+        }
+
+        request->send(200, "plain/text", "ok");
     });
 
     server.serveStatic("/", SPIFFS, "/web/");

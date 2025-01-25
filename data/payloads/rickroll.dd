@@ -4,13 +4,16 @@ DELAY 200
 STRING cmd
 ENTER
 DELAY 500
-STRING del %tmp%\rickyou.vbs
+STRING cd %temp%
+DELAY 100
+ENTER
+STRING del rickyou.vbs
 ENTER
 DELAY 200
-STRING del %tmp%\volup.vbs
+STRING del volup.vbs
 ENTER
 DELAY 200
-STRING cd %tmp% && copy con rickyou.vbs
+STRING copy con rickyou.vbs
 ENTER
 STRING While true
 ENTER
