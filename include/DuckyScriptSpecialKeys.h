@@ -47,7 +47,7 @@ const SPECIAL_KEY specialKeys[] = {
     {"CAPS_LOCK", 0x39},
     {"COMMAND", 0xe3},
     {"CTRL", 0xe0},
-    {"DELETE", 0x4c},
+    {"DEL", 0x4c},
     {"DOWN", 0x51},
     {"ESC", 0x29},
     {"ESZETT", 0x2d},

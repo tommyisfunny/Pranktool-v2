@@ -11,6 +11,9 @@ extern FileHelper fileHelper;
 #include <hardwaredefs.h>
 
 
+#include <settings.h>
+
+
 
 String autostartPath = "";
 String Button1Path = "";
@@ -20,8 +23,13 @@ String Button4Path = "";
 String SSID = "";
 String password = "";
 bool hidden;
+bool wlanonboot = false;
+bool ledsenabled = true;
 
 bool wlanActive = false;
+
+bool needToRunPayload = false;
+String payloadToRun = "";
 
 void setupio() {
   for(int i = 11; i < 14; i++) pinMode(i, OUTPUT);
@@ -42,58 +50,20 @@ void setupio() {
   delay(1000); // time to get recognised
 }
 
-void processSetting(String line){
-  int splitAt = line.indexOf(' ');
-  String setting = line.substring(0, splitAt);
-  String value = line.substring(splitAt);
-  setting.trim();
-  setting.toUpperCase();
-  value.trim();
-
-  debugOutln("Set " + setting + " to " + value);
-
-  if(setting == "AUTOSTART") autostartPath = value; 
-  else if(setting == "BUTTON1") Button1Path = value;
-  else if(setting == "BUTTON2") Button2Path = value;
-  else if(setting == "BUTTON3") Button3Path = value;
-  else if(setting == "BUTTON4") Button4Path = value;
-  else if(setting == "STANDARTDELAY") duckyScript.setStandartDelay(value.toInt());
-  else if(setting == "SSID") SSID = value;
-  else if(setting == "PASSWORD") password = value;
-  else if(setting == "HIDDEN") hidden = (value == "true");
+void applySettings(){
+  autostartPath = readSettings("/settings/config.cfg", "AUTOSTART");
+  Button1Path   = readSettings("/settings/config.cfg", "BUTTON1");
+  Button2Path   = readSettings("/settings/config.cfg", "BUTTON2");
+  Button3Path   = readSettings("/settings/config.cfg", "BUTTON3");
+  Button4Path   = readSettings("/settings/config.cfg", "BUTTON4");
+  duckyScript.setStandartDelay(readSettings("/settings/config.cfg", "STANDARTDELAY").toInt());
+  SSID          = readSettings("/settings/config.cfg", "SSID");
+  password      = readSettings("/settings/config.cfg", "PASSWORD");
+  hidden        = readSettings("/settings/config.cfg", "HIDDEN") == "true";
+  wlanonboot    = readSettings("/settings/config.cfg", "WLANONBOOT") == "true";
+  ledsenabled   = readSettings("/settings/config.cfg", "LEDSENABLED") == "true";
 }
 
-void updateSettings(){
-  File fs = SPIFFS.open("/settings/config.cfg");
-    String line = "";
-    char _char = ' ';
-    while(fs.available()){
-        _char = fs.read();
-        line += _char;
-        if(_char != '\n') continue;
-        processSetting(line);
-        line = "";
-    }
-    if(line != "") processSetting(line);
-    fs.close();
-}
-
-void writeSettings(String autostart, String Button1, String Button2, String Button3, String Button4, int StandartDelay, String SSID, String password, bool hidden){
-  String settings = "AUTOSTART " + autostart + "\nBUTTON1 " + Button1 + "\nBUTTON2 " + Button2 + "\nBUTTON3 " + Button3 + "\nBUTTON4 " + Button4 + "\nSTANDARTDELAY " + String(StandartDelay);
-  settings += "\nSSID " + SSID + "\nPASSWORD " + password + "\nHIDDEN " + (hidden ? "true" : "false");
-  debugOutln("Write settings:\n" + settings);
-  File fs = SPIFFS.open("/settings/config.cfg", FILE_WRITE);
-  if (!fs) {
-    debugOutln("There was an error opening the file for writing");
-    return;
-  }
-  if (fs.print(settings)) {
-    debugOutln("File was written");
-  } else {
-    debugOutln("File write failed");
-  }
-  fs.close();
-}
 
 void setup() {
   Serial.begin(115200);
@@ -109,9 +79,19 @@ void setup() {
   debugOut((SPIFFS.totalBytes() - SPIFFS.usedBytes()) / 1024);
   debugOut(" kb\n\n");
 
-  updateSettings();
+  applySettings();
 
-  if(digitalRead(B_DARUN) && autostartPath != "OFF") duckyScript.run("/payloads/" + autostartPath);
+  if(digitalRead(B_DARUN) && autostartPath != "OFF")
+  {
+    if(ledsenabled) digitalWrite(L_OK, HIGH);
+    duckyScript.run("/payloads/" + autostartPath);
+    if(ledsenabled) digitalWrite(L_OK, LOW);
+  } 
+  if(wlanonboot){
+    setupWlan();
+    wlanActive = true;
+    digitalWrite(L_WLAN, wlanActive && ledsenabled);
+  } 
 }
 
 void loop() {
@@ -132,18 +112,25 @@ void loop() {
       setupWlan(); 
     }
     wlanActive = !wlanActive;
-    digitalWrite(L_WLAN, wlanActive);
+    digitalWrite(L_WLAN, wlanActive && ledsenabled);
     delay(500);
   } 
 
+  if(needToRunPayload){
+    if(ledsenabled) digitalWrite(L_OK, HIGH);
+    duckyScript.run("/payloads/" + payloadToRun);
+    if(ledsenabled) digitalWrite(L_OK, LOW);
+    needToRunPayload = false;
+  }
+
   if(!b1 && !b2 && !b3 && !b4) return;
 
-  digitalWrite(L_OK, HIGH);
+  if(ledsenabled) digitalWrite(L_OK, HIGH);
   if(b1) duckyScript.run("/payloads/" + Button1Path);
   if(b2) duckyScript.run("/payloads/" + Button2Path);
   if(b3) duckyScript.run("/payloads/" + Button3Path);
   if(b4) duckyScript.run("/payloads/" + Button4Path);
-  digitalWrite(L_OK, LOW);
+  if(ledsenabled) digitalWrite(L_OK, LOW);
 
   delay(100);
 }

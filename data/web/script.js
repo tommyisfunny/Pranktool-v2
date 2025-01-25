@@ -8,6 +8,8 @@ window.onload = async function (){
     var SSID = document.getElementById("SSID");
     var password = document.getElementById("password");
     var hidden = document.getElementById("hidden");
+    var wlanonboot = document.getElementById("wlanonboot");
+    var ledsenabled = document.getElementById("ledsenabled");
 
     var input = document.getElementById("payloadUploadSelector");
     input.addEventListener("change", ()=>{
@@ -43,8 +45,18 @@ window.onload = async function (){
 
 
     document.getElementById("changeSettings").onclick = function (){
-        var url = "changeSettings?autostart=" + autostart.value + "&&button1=" + button1.value + "&&button2=" + button2.value + "&&button3=" + button3.value + "&&button4=" + button4.value;
-        url +=  "&&standartDelay=" + standartDelay.value + "&&SSID=" + SSID.value + "&&password=" + password.value + "&&hidden=" + (hidden.checked ? "true" : "false");
+        var url = "changeSettings?";
+        url += "autostart=" + autostart.value;
+        url += "&&button1=" + button1.value;
+        url += "&&button2=" + button2.value;
+        url += "&&button3=" + button3.value;
+        url += "&&button4=" + button4.value;
+        url +=  "&&standartDelay=" + standartDelay.value;
+        url += "&&SSID=" + SSID.value;
+        url += "&&password=" + password.value;
+        url += "&&hidden=" + (hidden.checked ? "true" : "false");
+        url += "&&wlanonboot=" + (wlanonboot.checked ? "true" : "false");
+        url += "&&ledsenabled=" + (ledsenabled.checked ? "true" : "false");
 
         if(password.value.length < 8 && password.value.length != 0){
             alert("password to short");
@@ -63,22 +75,6 @@ window.onload = async function (){
 
 }
 
-
-function proccessData(data){
-    var autostart = document.getElementById("autostart");
-    var button1 = document.getElementById("Button1");
-    var button2 = document.getElementById("Button2");
-    var button3 = document.getElementById("Button3");
-    var button4 = document.getElementById("Button4");
-    var standartDelay = document.getElementById("standartDelay");
-    console.log(data);
-    autostart.value = data.autostart;
-    button1.value = data.button1;
-    button2.value = data.button2;
-    button3.value = data.button3;
-    button4.value = data.button4;
-    standartDelay.value = data.standartDelay;
-}
 
 
 function createPayloadList(data){
@@ -158,10 +154,14 @@ function createPayloadList(data){
 function createSettingsOptions(id, settingsData, availablePayloads){
     var element = document.getElementById(id);
 
+    console.log("getting element: " + id);
+
     if(element.nodeName == "INPUT"){
         if(element.type == "checkbox"){
-            element.checked = settingsData[id] == "true";
+            console.log("checkbox set to: " + settingsData[id]);
+            element.checked = settingsData[id];
         } else {
+            console.log("input set to: " + settingsData[id]);
             element.value = settingsData[id];
         }
     } else {

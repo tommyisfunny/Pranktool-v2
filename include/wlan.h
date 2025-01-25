@@ -4,13 +4,13 @@
 #include <AsyncTCP.h>
 #include <ESPAsyncWebServer.h>
 #include <SPIFFS.h>
+#include <ArduinoJson.h>
 
+#include <settings.h>
 #include <hardwaredefs.h>
 
 #include <debugOut.h>
 
-extern void writeSettings(String autostart, String Button1, String Button2, String Button3, String Button4, int StandartDelay, String SSID, String password, bool hidden);
-extern void updateSettings();
 extern String autostartPath;
 extern String Button1Path;
 extern String Button2Path;
@@ -19,7 +19,14 @@ extern String Button4Path;
 extern String SSID;
 extern String password;
 extern bool hidden;
+extern bool wlanonboot;
+extern bool ledsenabled;
 extern DuckyScript duckyScript;
+
+extern bool needToRunPayload;
+extern String payloadToRun;
+
+extern void applySettings();
 
 String editPayload = "";
 
@@ -80,52 +87,41 @@ void setupWlan(){
     server.on("/changeSettings", HTTP_GET, [] (AsyncWebServerRequest *request) {
         debugOutln("Change settings request");
 
-        if (
-            request->hasParam("autostart") || request->hasParam("button1") || request->hasParam("button2") ||
-            request->hasParam("button3")   || request->hasParam("button4") || request->hasParam("standartDelay") ||
-            request->hasParam("SSID") || request->hasParam("password") || request->hasParam("hidden")
-            ) {
-            String newAutostart = autostartPath;
-            String newButton1 = Button1Path;
-            String newButton2 = Button2Path;
-            String newButton3 = Button3Path;
-            String newButton4 = Button4Path;
-            int newStandartDelay = duckyScript.standartDelay;
-            String newSSID = SSID;
-            String newPassword = password;
-            bool newHidden = hidden;
+        if(request->hasParam("autostart"))      updateSetting("/settings/config.cfg", "AUTOSTART", request->getParam("autostart")->value());
+        if(request->hasParam("button1"))        updateSetting("/settings/config.cfg", "BUTTON1", request->getParam("button1")->value());
+        if(request->hasParam("button2"))        updateSetting("/settings/config.cfg", "BUTTON2", request->getParam("button2")->value());
+        if(request->hasParam("button3"))        updateSetting("/settings/config.cfg", "BUTTON3", request->getParam("button3")->value());
+        if(request->hasParam("button4"))        updateSetting("/settings/config.cfg", "BUTTON4", request->getParam("button4")->value());
+        if(request->hasParam("standartDelay"))  updateSetting("/settings/config.cfg", "STANDARTDELAY", request->getParam("standartDelay")->value());
+        if(request->hasParam("SSID"))           updateSetting("/settings/config.cfg", "SSID", request->getParam("SSID")->value());
+        if(request->hasParam("password"))       updateSetting("/settings/config.cfg", "PASSWORD", request->getParam("password")->value());
+        if(request->hasParam("hidden"))         updateSetting("/settings/config.cfg", "HIDDEN", request->getParam("hidden")->value());
+        if(request->hasParam("wlanonboot"))     updateSetting("/settings/config.cfg", "WLANONBOOT", request->getParam("wlanonboot")->value());
+        if(request->hasParam("ledsenabled"))    updateSetting("/settings/config.cfg", "LEDSENABLED", request->getParam("ledsenabled")->value());
+        applySettings();
 
-            if (request->hasParam("autostart"))     newAutostart = request->getParam("autostart")->value();
-            if (request->hasParam("button1"))       newButton1 = request->getParam("button1")->value();
-            if (request->hasParam("button2"))       newButton2 = request->getParam("button2")->value();
-            if (request->hasParam("button3"))       newButton3 = request->getParam("button3")->value();
-            if (request->hasParam("button4"))       newButton4 = request->getParam("button4")->value();
-            if (request->hasParam("standartDelay")) newStandartDelay = request->getParam("standartDelay")->value().toInt();
-            if (request->hasParam("SSID"))          newSSID = request->getParam("SSID")->value();
-            if (request->hasParam("password"))      newPassword = request->getParam("password")->value();
-            if (request->hasParam("hidden"))       newHidden = (request->getParam("hidden")->value() == "true");
-            
-            writeSettings(newAutostart, newButton1, newButton2, newButton3, newButton4, newStandartDelay, newSSID, newPassword, newHidden);
-            updateSettings();
-        }
         request->send(200, "text/plain", "OK");
     });
 
     server.on("/getSettings", HTTP_GET, [] (AsyncWebServerRequest *request) {
         debugOutln("Get settings request:");
-        String json = "{";
-        json += "\"autostart\":\"" + autostartPath + "\",";
-        json += "\"button1\":\"" + Button1Path + "\",";
-        json += "\"button2\":\"" + Button2Path + "\",";
-        json += "\"button3\":\"" + Button3Path + "\",";
-        json += "\"button4\":\"" + Button4Path + "\",";
-        json += "\"standartDelay\":" + String(duckyScript.standartDelay) + ",";
-        json += "\"SSID\":\"" + SSID + "\",";
-        json += "\"password\":\"" + password + "\",";
-        json += "\"hidden\":\""; 
-        json += (hidden ? "true" : "false");
-        json += "\"";
-        json += "}";
+
+        JsonDocument doc;
+
+        doc["autostart"] = autostartPath;
+        doc["button1"] = Button1Path;
+        doc["button2"] = Button2Path;
+        doc["button3"] = Button3Path;
+        doc["button4"] = Button4Path;
+        doc["standartDelay"] = duckyScript.standartDelay;
+        doc["SSID"] = SSID;
+        doc["password"] = password;
+        doc["hidden"] = hidden;
+        doc["wlanonboot"] = wlanonboot;
+        doc["ledsenabled"] = ledsenabled;
+
+        String json;
+        serializeJson(doc, json);
 
         debugOutln(json);
 
@@ -167,7 +163,8 @@ void setupWlan(){
         debugOutln("Run payload request:");
         if(request->hasArg("payload")){
           String name = request->getParam("payload")->value();
-          duckyScript.run("/payloads/" + name);
+          payloadToRun = name;
+          needToRunPayload = true;
         }
 
         request->send(200, "plain/text", "ok");

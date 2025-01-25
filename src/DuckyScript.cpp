@@ -79,14 +79,26 @@ void DuckyScript::string(String arg){
 }
 
 void DuckyScript::specialKey(int keycode, String arg){
-    int keycodeArg = this->findSpecialKey(arg);
-    if(keycodeArg == -1) keycodeArg = keymap[arg[0]].usage;
-
-    //Serial.print("specialKey: ");Serial.print(keycode, HEX);Serial.print(" arg: ");Serial.println(keycodeArg, HEX);
+    Serial.print("specialKey: (");Serial.print(keycode, HEX);
 
     keyboard.pressKey(keycode);
-    delay(standartDelay * 10);
-    keyboard.pressKey(keycodeArg);
+    String additonalKey = "";
+    arg += " ";
+    for(int i = 0; i < arg.length(); i++){
+        if(arg[i] != ' '){
+            additonalKey += arg[i];
+        } else {
+            int keycodeArg = this->findSpecialKey(additonalKey);
+            if(keycodeArg == -1) keycodeArg = keymap[additonalKey[0]].usage;
+            keyboard.pressKey(keycodeArg);
+
+            Serial.print(") arg: (");Serial.print(additonalKey);Serial.print("|");Serial.print(keycodeArg, HEX);
+            additonalKey = "";
+        }
+    }
+
+    Serial.println(")");
+
     delay(standartDelay * 10);
     keyboard.releaseAll();
     delay(standartDelay * 10);
