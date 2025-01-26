@@ -28,6 +28,7 @@ class DuckyScript{
         void string(String arg);
         int findSpecialKey(String key);
         void setLED(String arg);
+        void pasteFile(String arg);
 };
 
 extern DuckyScript duckyScript;

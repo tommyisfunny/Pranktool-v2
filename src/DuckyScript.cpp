@@ -58,6 +58,7 @@ void DuckyScript::parseLine(String line){
     if     (lowerCmd == "delay") this->_delay(arg);
     else if(lowerCmd == "string") this->string(arg);
     else if(lowerCmd == "led") setLED(arg);
+    else if(lowerCmd == "paste") pasteFile(arg);
     else {
         int keycode = findSpecialKey(command); 
         if(keycode != -1){
@@ -85,6 +86,13 @@ void DuckyScript::setLED(String arg){
     if(arg == "on") digitalWrite(L_USER, HIGH);
     if(arg == "off") digitalWrite(L_USER, LOW);
     if(arg == "toggle") digitalWrite(L_USER, !digitalRead(L_USER));
+}
+
+void DuckyScript::pasteFile(String arg){
+    File fs = SPIFFS.open("/payloads/" + arg);
+    String cnt = fs.readString();
+    fs.close();
+    keyboard.sendString(cnt);
 }
 
 void DuckyScript::specialKey(int keycode, String arg){
