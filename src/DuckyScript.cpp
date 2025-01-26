@@ -90,6 +90,7 @@ void DuckyScript::setLED(String arg){
 
 void DuckyScript::pasteFile(String arg){
     File fs = SPIFFS.open("/payloads/" + arg);
+    if(!fs) return;
     String cnt = fs.readString();
     fs.close();
     keyboard.sendString(cnt);

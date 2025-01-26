@@ -140,7 +140,27 @@ void setupWlan(){
         File file = root.openNextFile();
 
         while(file){
-            json += "\"" + String(file.name()) + "\",";
+            String name = file.name();
+            String ext = name.substring(name.lastIndexOf(".") + 1);
+            /*if(ext == "dd")*/ json += "\"" + name + "\",";
+            file = root.openNextFile();
+        }
+        json[json.length() - 1] = ']';
+        debugOutln(json);
+
+        request->send(200, "application/json", json);
+    });
+
+    server.on("/getOthers", HTTP_GET, [] (AsyncWebServerRequest *request) {
+        debugOutln("Get others request:");
+        String json = "[";
+        File root = SPIFFS.open("/payloads");
+        File file = root.openNextFile();
+
+        while(file){
+            String name = file.name();
+            String ext = name.substring(name.lastIndexOf(".") + 1);
+            if(ext != "dd") json += "\"" + name + "\",";
             file = root.openNextFile();
         }
         json[json.length() - 1] = ']';
