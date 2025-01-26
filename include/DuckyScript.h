@@ -5,6 +5,7 @@
 #include <SPIFFS.h>
 #include <hidkeyboardX.h>
 #include <DuckyScriptSpecialKeys.h>
+#include <hardwaredefs.h>
 
 class DuckyScript{
     public:
@@ -26,6 +27,8 @@ class DuckyScript{
         void specialKey(int keycode, String arg);
         void string(String arg);
         int findSpecialKey(String key);
+        void setLED(String arg);
 };
 
 extern DuckyScript duckyScript;
+extern bool ledsenabled;

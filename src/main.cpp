@@ -1,19 +1,8 @@
 #include <Arduino.h>
 #include <SPIFFS.h>
 #include <debugOut.h>
-
-
 #include <FileHelper.h>
 extern FileHelper fileHelper;
-
-#include <DuckyScript.h>
-#include <wlan.h>
-#include <hardwaredefs.h>
-
-
-#include <settings.h>
-
-
 
 String autostartPath = "";
 String Button1Path = "";
@@ -30,6 +19,14 @@ bool wlanActive = false;
 
 bool needToRunPayload = false;
 String payloadToRun = "";
+
+#include <DuckyScript.h>
+#include <wlan.h>
+#include <hardwaredefs.h>
+
+
+#include <settings.h>
+
 
 void setupio() {
   for(int i = 11; i < 14; i++) pinMode(i, OUTPUT);
@@ -117,6 +114,7 @@ void loop() {
   } 
 
   if(needToRunPayload){
+    if(ledsenabled) digitalWrite(L_ERR, LOW);
     if(ledsenabled) digitalWrite(L_OK, HIGH);
     duckyScript.run("/payloads/" + payloadToRun);
     if(ledsenabled) digitalWrite(L_OK, LOW);
@@ -124,6 +122,8 @@ void loop() {
   }
 
   if(!b1 && !b2 && !b3 && !b4) return;
+
+  if(ledsenabled) digitalWrite(L_ERR, LOW);
 
   if(ledsenabled) digitalWrite(L_OK, HIGH);
   if(b1) duckyScript.run("/payloads/" + Button1Path);

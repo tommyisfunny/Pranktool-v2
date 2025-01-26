@@ -57,14 +57,16 @@ void DuckyScript::parseLine(String line){
 
     if     (lowerCmd == "delay") this->_delay(arg);
     else if(lowerCmd == "string") this->string(arg);
+    else if(lowerCmd == "led") setLED(arg);
     else {
         int keycode = findSpecialKey(command); 
         if(keycode != -1){
             this->specialKey(keycode, arg);
         } else {
-            //debugOutln("Command: " + command);
-            //debugOutln("Arg: " + arg);
-            //debugOutln("Not Found");
+            if(ledsenabled) digitalWrite(L_ERR, HIGH);
+            Serial.println("Command: " + command);
+            Serial.println("Arg: " + arg);
+            Serial.println("Not Found");
         }
     }
 }
@@ -76,6 +78,13 @@ void DuckyScript::_delay(String arg){
 void DuckyScript::string(String arg){
     keyboard.sendString(arg);
     delay(standartDelay * 10);
+}
+
+void DuckyScript::setLED(String arg){
+    arg.toLowerCase();
+    if(arg == "on") digitalWrite(L_USER, HIGH);
+    if(arg == "off") digitalWrite(L_USER, LOW);
+    if(arg == "toggle") digitalWrite(L_USER, !digitalRead(L_USER));
 }
 
 void DuckyScript::specialKey(int keycode, String arg){
