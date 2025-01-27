@@ -3,8 +3,10 @@
 #include <WiFi.h>
 #include <AsyncTCP.h>
 #include <ESPAsyncWebServer.h>
+#include <ElegantOTA.h>
 #include <SPIFFS.h>
 #include <ArduinoJson.h>
+
 
 #include <settings.h>
 #include <hardwaredefs.h>
@@ -219,6 +221,7 @@ void setupWlan(){
 
     server.serveStatic("/", SPIFFS, "/web/");
 
+    ElegantOTA.begin(&server);
     server.begin();
 }
 
@@ -229,5 +232,5 @@ void stopWlan(){
 }
 
 void wlanloop() {
-
+  ElegantOTA.loop();
 }

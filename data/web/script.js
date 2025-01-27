@@ -10,6 +10,7 @@ window.onload = async function (){
     var hidden = document.getElementById("hidden");
     var wlanonboot = document.getElementById("wlanonboot");
     var ledsenabled = document.getElementById("ledsenabled");
+    var updateButton = document.getElementById("update");
 
     var input = document.getElementById("payloadUploadSelector");
     input.addEventListener("change", ()=>{
@@ -96,6 +97,10 @@ window.onload = async function (){
         fetch("/createPayload?name=" + payloadName).then(()=>{
             location.href = "/edit.html?payload=" + payloadName;
         });
+    }
+
+    updateButton.onclick = function (){
+        location.href = "/update";
     }
 }
 
