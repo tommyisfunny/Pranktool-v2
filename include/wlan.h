@@ -7,28 +7,16 @@
 #include <SPIFFS.h>
 #include <ArduinoJson.h>
 
-
 #include <settings.h>
 #include <hardwaredefs.h>
-
 #include <debugOut.h>
 
-extern String autostartPath;
-extern String Button1Path;
-extern String Button2Path;
-extern String Button3Path;
-extern String Button4Path;
-extern String SSID;
-extern String password;
-extern bool hidden;
-extern bool wlanonboot;
-extern bool ledsenabled;
+
 extern DuckyScript duckyScript;
 
 extern bool needToRunPayload;
 extern String payloadToRun;
 
-extern void applySettings();
 
 String editPayload = "";
 
@@ -80,8 +68,16 @@ String processor(const String& var) {
 void setupWlan(){
     WiFi.mode(WIFI_AP);
 
-    if(password == "") WiFi.softAP(SSID.c_str(), NULL            , 1, hidden?1:0);
-    else               WiFi.softAP(SSID.c_str(), password.c_str(), 1, hidden?1:0);
+    const char* ssid = settings["SSID"];
+    const char* password = settings["PASSWORD"];
+    bool hidden = settings["HIDDEN"];
+
+    //const char* ssid = "test";
+    //const char* password = "test1234";
+    //bool hidden = false;
+
+    if(password) WiFi.softAP(ssid, NULL    , 1, hidden?1:0);
+    else         WiFi.softAP(ssid, password, 1, hidden?1:0);
 
     IPAddress IP = WiFi.softAPIP();
     debugOut("AP IP address: ");
@@ -94,18 +90,20 @@ void setupWlan(){
     server.on("/changeSettings", HTTP_GET, [] (AsyncWebServerRequest *request) {
         debugOutln("Change settings request");
 
-        if(request->hasParam("autostart"))      updateSetting("/settings/config.cfg", "AUTOSTART", request->getParam("autostart")->value());
-        if(request->hasParam("button1"))        updateSetting("/settings/config.cfg", "BUTTON1", request->getParam("button1")->value());
-        if(request->hasParam("button2"))        updateSetting("/settings/config.cfg", "BUTTON2", request->getParam("button2")->value());
-        if(request->hasParam("button3"))        updateSetting("/settings/config.cfg", "BUTTON3", request->getParam("button3")->value());
-        if(request->hasParam("button4"))        updateSetting("/settings/config.cfg", "BUTTON4", request->getParam("button4")->value());
-        if(request->hasParam("standartDelay"))  updateSetting("/settings/config.cfg", "STANDARTDELAY", request->getParam("standartDelay")->value());
-        if(request->hasParam("SSID"))           updateSetting("/settings/config.cfg", "SSID", request->getParam("SSID")->value());
-        if(request->hasParam("password"))       updateSetting("/settings/config.cfg", "PASSWORD", request->getParam("password")->value());
-        if(request->hasParam("hidden"))         updateSetting("/settings/config.cfg", "HIDDEN", request->getParam("hidden")->value());
-        if(request->hasParam("wlanonboot"))     updateSetting("/settings/config.cfg", "WLANONBOOT", request->getParam("wlanonboot")->value());
-        if(request->hasParam("ledsenabled"))    updateSetting("/settings/config.cfg", "LEDSENABLED", request->getParam("ledsenabled")->value());
-        applySettings();
+        if(request->hasParam("autostart"))      settings["AUTOSTART"]     = request->getParam("autostart")->value();
+        if(request->hasParam("button1"))        settings["BUTTON1"]       = request->getParam("button1")->value();
+        if(request->hasParam("button2"))        settings["BUTTON2"]       = request->getParam("button2")->value();
+        if(request->hasParam("button3"))        settings["BUTTON3"]       = request->getParam("button3")->value();
+        if(request->hasParam("button4"))        settings["BUTTON4"]       = request->getParam("button4")->value();
+        if(request->hasParam("standartDelay"))  settings["STANDARTDELAY"] = request->getParam("standartDelay")->value();
+        if(request->hasParam("SSID"))           settings["SSID"]          = request->getParam("SSID")->value();
+        if(request->hasParam("password"))       settings["PASSWORD"]      = request->getParam("password")->value();
+        if(request->hasParam("hidden"))         settings["HIDDEN"]        = request->getParam("hidden")->value() == "true";
+        if(request->hasParam("wlanonboot"))     settings["WLANONBOOT"]    = request->getParam("wlanonboot")->value() == "true";
+        if(request->hasParam("ledsenabled"))    settings["LEDSENABLED"]   = request->getParam("ledsenabled")->value() == "true";
+        
+        storeSettings();
+        duckyScript.setStandartDelay(settings["STANDARTDELAY"]);
 
         request->send(200, "text/plain", "OK");
     });
@@ -113,26 +111,10 @@ void setupWlan(){
     server.on("/getSettings", HTTP_GET, [] (AsyncWebServerRequest *request) {
         debugOutln("Get settings request:");
 
-        JsonDocument doc;
-
-        doc["autostart"] = autostartPath;
-        doc["button1"] = Button1Path;
-        doc["button2"] = Button2Path;
-        doc["button3"] = Button3Path;
-        doc["button4"] = Button4Path;
-        doc["standartDelay"] = duckyScript.standartDelay;
-        doc["SSID"] = SSID;
-        doc["password"] = password;
-        doc["hidden"] = hidden;
-        doc["wlanonboot"] = wlanonboot;
-        doc["ledsenabled"] = ledsenabled;
-
-        String json;
-        serializeJson(doc, json);
-
-        debugOutln(json);
-
-        request->send(200, "application/json", json);
+        String settingsString;
+        serializeJson(settings, settingsString);
+        debugOutln(settingsString);
+        request->send(200, "application/json", settingsString);
     });
 
     server.on("/getPayloads", HTTP_GET, [] (AsyncWebServerRequest *request) {
@@ -219,7 +201,7 @@ void setupWlan(){
         request->send(200, "plain/text", "ok");
     });
 
-    server.serveStatic("/", SPIFFS, "/web/");
+    server.serveStatic("/", SPIFFS, "/web/").setCacheControl("no-cache, no-store, must-revalidate");
 
     ElegantOTA.begin(&server);
     server.begin();

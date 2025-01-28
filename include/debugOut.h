@@ -1,30 +1,12 @@
 #pragma once
 #include <Arduino.h>
 
-#include "cdcusb.h"
-CDCusb CDCUSBSerial;
+// CDCUSBSerial seems to mess with the keyboard
+//#include <cdcusb.h>
+//extern CDCusb CDCUSBSerial;
 
-void debugOutln(String msg){
-  Serial.println(msg);
-  //CDCUSBSerial.println(msg);
-}
-
-void debugOutln(const char* msg){
-  Serial.println(msg);
-  //CDCUSBSerial.println(msg);
-}
-
-void debugOut(String msg){
-  Serial.print(msg);
-  //CDCUSBSerial.print(msg);
-}
-
-void debugOut(const char* msg){
-  Serial.print(msg);
-  //CDCUSBSerial.print(msg);
-}
-
-void debugOut(int msg){
-  Serial.print(msg);
-  //CDCUSBSerial.print(msg);
-}
+void debugOutln(String msg);
+void debugOutln(const char* msg);
+void debugOut(String msg);
+void debugOut(const char* msg);
+void debugOut(int msg);

@@ -6,6 +6,7 @@
 #include <hidkeyboardX.h>
 #include <DuckyScriptSpecialKeys.h>
 #include <hardwaredefs.h>
+#include <settings.h>
 
 class DuckyScript{
     public:

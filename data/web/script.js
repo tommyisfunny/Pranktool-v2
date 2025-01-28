@@ -1,15 +1,15 @@
 window.onload = async function (){
-    var autostart = document.getElementById("autostart");
-    var button1 = document.getElementById("button1");
-    var button2 = document.getElementById("button2");
-    var button3 = document.getElementById("button3");
-    var button4 = document.getElementById("button4");
-    var standartDelay = document.getElementById("standartDelay");
+    var autostart = document.getElementById("AUTOSTART");
+    var button1 = document.getElementById("BUTTON1");
+    var button2 = document.getElementById("BUTTON2");
+    var button3 = document.getElementById("BUTTON3");
+    var button4 = document.getElementById("BUTTON4");
+    var standartDelay = document.getElementById("STANDARTDELAY");
     var SSID = document.getElementById("SSID");
-    var password = document.getElementById("password");
-    var hidden = document.getElementById("hidden");
-    var wlanonboot = document.getElementById("wlanonboot");
-    var ledsenabled = document.getElementById("ledsenabled");
+    var password = document.getElementById("PASSWORD");
+    var hidden = document.getElementById("HIDDEN");
+    var wlanonboot = document.getElementById("WLANONBOOT");
+    var ledsenabled = document.getElementById("LEDSENABLED");
     var updateButton = document.getElementById("update");
 
     var input = document.getElementById("payloadUploadSelector");

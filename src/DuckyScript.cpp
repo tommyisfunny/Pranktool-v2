@@ -1,5 +1,5 @@
 #include <DuckyScript.h>
-
+#include <debugOut.h>
 
 FileHelper fileHelper;
 
@@ -18,7 +18,7 @@ void DuckyScript::setStandartDelay(int delay){
 }
 
 void DuckyScript::run(String path){
-    //debugOutln("Running " + path);
+    debugOutln("Running " + path);
     File fs = SPIFFS.open(path);
     String line = "";
     char _char = ' ';
@@ -52,8 +52,8 @@ void DuckyScript::parseLine(String line){
     String lowerCmd = command;
     lowerCmd.toLowerCase();
 
-    //Serial.println("Command: " + command);
-    //Serial.println("Arg: " + arg);
+    debugOutln("Command: " + command);
+    debugOutln("Arg: " + arg);
 
     if     (lowerCmd == "delay") this->_delay(arg);
     else if(lowerCmd == "string") this->string(arg);
@@ -64,10 +64,10 @@ void DuckyScript::parseLine(String line){
         if(keycode != -1){
             this->specialKey(keycode, arg);
         } else {
-            if(ledsenabled) digitalWrite(L_ERR, HIGH);
-            Serial.println("Command: " + command);
-            Serial.println("Arg: " + arg);
-            Serial.println("Not Found");
+            if(settings["LEDSENABLED"]) digitalWrite(L_ERR, HIGH);
+            debugOutln("Command: " + command);
+            debugOutln("Arg: " + arg);
+            debugOutln("Not Found");
         }
     }
 }
@@ -97,7 +97,8 @@ void DuckyScript::pasteFile(String arg){
 }
 
 void DuckyScript::specialKey(int keycode, String arg){
-    Serial.print("specialKey: (");Serial.print(keycode, HEX);
+    //debugOut("Arg: \"");debugOut(arg);debugOutln("\"");
+    //debugOut("specialKey: (");debugOut(keycode);
 
     keyboard.pressKey(keycode);
     String additonalKey = "";
@@ -110,12 +111,12 @@ void DuckyScript::specialKey(int keycode, String arg){
             if(keycodeArg == -1) keycodeArg = keymap[additonalKey[0]].usage;
             keyboard.pressKey(keycodeArg);
 
-            Serial.print(") arg: (");Serial.print(additonalKey);Serial.print("|");Serial.print(keycodeArg, HEX);
+            //debugOut(") arg: (");debugOut(additonalKey);debugOut("|");debugOut(keycodeArg);
             additonalKey = "";
         }
     }
 
-    Serial.println(")");
+    //debugOutln(")");
 
     delay(standartDelay * 10);
     keyboard.releaseAll();

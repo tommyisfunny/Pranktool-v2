@@ -1,105 +1,93 @@
 #include <settings.h>
+#include <debugOut.h>
 
-String readSettings(const char *filePath, const String &key = "") {
-  File file = SPIFFS.open(filePath, "r");
+JsonDocument settings;
+
+void initSettings(){
+  if(!SPIFFS.exists(SETTINGS_FILE)){
+    debugOutln("Settings file does not exist, creating new one");
+    storeSettings();
+  }
+
+  loadSettings();
+
+  JsonDocument settingsInfo;
+
+  if(!SPIFFS.exists(SETTINGS_INFO_FILE)){
+    debugOutln("Settings info file does not exist!!!!");
+    applyFallbackSettings();
+    return;
+  }
+
+ 
+  File file = SPIFFS.open(SETTINGS_INFO_FILE, "r");
   if (!file) {
-    Serial.println("Failed to open file for reading");
-    return "";
+    debugOutln("Failed to open settings info file for reading");
+    applyFallbackSettings();
+    return;
   }
 
-  String content = file.readString();
+  DeserializationError err = deserializeJson(settingsInfo, file);
   file.close();
-
-  // If no specific key is requested, return full content
-  if (key == "") {
-    return content;
+  if (err) {
+    debugOutln("Failed to parse settings info file");
+    applyFallbackSettings();
+    return;
   }
 
-  // Search for the specific key
-  int start = 0;
-  while (start < content.length()) {
-    int end = content.indexOf('\n', start);
-    if (end == -1) end = content.length();
-
-    String line = content.substring(start, end);
-    int separator = line.indexOf('=');
-
-    if (separator != -1) {
-      String currentKey = line.substring(0, separator);
-      String currentValue = line.substring(separator + 1);
-
-      currentKey.trim();
-      currentValue.trim();
-
-      if (currentKey == key) {
-        Serial.println("Key found: " + key + " = " + currentValue);
-        return currentValue; // Return the value for the specified key
-      }
+  bool settingsChanged = false;
+  int settingsCount = settingsInfo["fields"].size();
+  for(int i = 0; i < settingsCount; i++){
+    String key = settingsInfo["fields"][i]["name"];
+    if(!settings.containsKey(key)){
+      settingsChanged = true;
+      String defaultVal = settingsInfo["fields"][i]["default"];
+      debugOutln("Settings file does not contain key: " + key + ", adding it with default value: " + defaultVal);
+      settings[key] = defaultVal;
     }
-
-    start = end + 1;
   }
 
-  Serial.println("Key not found: " + key);
-
-  // If key is not found, return an empty string
-  return "";
+  if(settingsChanged) storeSettings();
 }
 
-// Write settings to a file
-bool writeSettings(const char *filePath, const String &content) {
-  File file = SPIFFS.open(filePath, "w");
+
+
+void storeSettings(){
+  File file = SPIFFS.open(SETTINGS_FILE, "w");
   if (!file) {
-    Serial.println("Failed to open file for writing");
-    return false;
+    debugOutln("Failed to open settings file for writing");
+    return;
   }
 
-  file.print(content);
+  serializeJson(settings, file);
   file.close();
-  return true;
+
+  debugOutln("Settings stored");
 }
 
-// Update specific setting in a file
-bool updateSetting(const char *filePath, const String &key, const String &value) {
-  Serial.println("Updating setting: " + key + " = " + value);
 
-  String content = readSettings(filePath);
-
-  // Parse settings into key-value pairs
-  String updatedContent;
-  bool keyFound = false;
-
-  int start = 0;
-  while (start < content.length()) {
-    int end = content.indexOf('\n', start);
-    if (end == -1) end = content.length();
-
-    String line = content.substring(start, end);
-    int separator = line.indexOf('=');
-
-    if (separator != -1) {
-      String currentKey = line.substring(0, separator);
-      String currentValue = line.substring(separator + 1);
-
-      currentKey.trim();
-      currentValue.trim();
-
-      if (currentKey == key) {
-        currentValue = value; // Update the value
-        keyFound = true;
-      }
-
-      updatedContent += currentKey + "=" + currentValue + "\n";
-    }
-
-    start = end + 1;
+void loadSettings(){
+  File file = SPIFFS.open(SETTINGS_FILE, "r");
+  if (!file) {
+    debugOutln("Failed to open settings file for reading");
+    return;
   }
 
-  // If the key was not found, add it
-  if (!keyFound) {
-    updatedContent += key + "=" + value + "\n";
+  DeserializationError err = deserializeJson(settings, file);
+  file.close();
+
+  if (err) {
+    debugOutln("Failed to parse settings file");
+    return;
   }
 
-  // Write back the updated content
-  return writeSettings(filePath, updatedContent);
+  debugOutln("Settings loaded");
+}
+
+void applyFallbackSettings(){
+  debugOutln("Applying fallback settings");
+  settings["SSID"] = "Pranktool";
+  settings["PASSWORD"] = "";
+  settings["HIDDEN"] = false;
+  storeSettings();
 }

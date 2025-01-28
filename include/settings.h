@@ -1,7 +1,14 @@
 #pragma once
 #include <Arduino.h>
 #include <SPIFFS.h>
+#include <ArduinoJson.h>
 
-String readSettings(const char *filePath, const String &key);
-bool writeSettings(const char *filePath, const String &content);
-bool updateSetting(const char *filePath, const String &key, const String &value);
+#define SETTINGS_FILE "/settings/config.json"
+#define SETTINGS_INFO_FILE "/settings/info.json"
+
+extern JsonDocument settings;
+
+
+void initSettings();
+void storeSettings();
+void loadSettings();

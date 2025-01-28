@@ -5,17 +5,6 @@
 
 extern FileHelper fileHelper;
 
-String autostartPath = "";
-String Button1Path = "";
-String Button2Path = "";
-String Button3Path = "";
-String Button4Path = "";
-String SSID = "";
-String password = "";
-bool hidden;
-bool wlanonboot = false;
-bool ledsenabled = true;
-
 bool wlanActive = false;
 
 bool needToRunPayload = false;
@@ -24,8 +13,6 @@ String payloadToRun = "";
 #include <DuckyScript.h>
 #include <wlan.h>
 #include <hardwaredefs.h>
-
-
 #include <settings.h>
 
 
@@ -43,57 +30,64 @@ void setupio() {
   keyboard.begin();
   duckyScript.begin();
 
-  if (!CDCUSBSerial.begin()) Serial.println("Failed to start CDC USB stack");
+  // CDCUSBSerial seems to mess with the keyboard
+  //if (!CDCUSBSerial.begin()) Serial.println("Failed to start CDC USB stack");
+
   debugOutln("\n\nStarting Pranktool...\n");
   delay(1000); // time to get recognised
 }
 
-void applySettings(){
-  autostartPath = readSettings("/settings/config.cfg", "AUTOSTART");
-  Button1Path   = readSettings("/settings/config.cfg", "BUTTON1");
-  Button2Path   = readSettings("/settings/config.cfg", "BUTTON2");
-  Button3Path   = readSettings("/settings/config.cfg", "BUTTON3");
-  Button4Path   = readSettings("/settings/config.cfg", "BUTTON4");
-  duckyScript.setStandartDelay(readSettings("/settings/config.cfg", "STANDARTDELAY").toInt());
-  SSID          = readSettings("/settings/config.cfg", "SSID");
-  password      = readSettings("/settings/config.cfg", "PASSWORD");
-  hidden        = readSettings("/settings/config.cfg", "HIDDEN") == "true";
-  wlanonboot    = readSettings("/settings/config.cfg", "WLANONBOOT") == "true";
-  ledsenabled   = readSettings("/settings/config.cfg", "LEDSENABLED") == "true";
+void printSPIFFSInfo(){
+  debugOut("SPIFFS info:\n");
+  debugOut("Total: ");
+  debugOut(SPIFFS.totalBytes() / 1024);
+  debugOut(" kb\nUsed: ");
+  debugOut(SPIFFS.usedBytes() / 1024);
+  debugOut(" kb\nFree: ");
+  debugOut((SPIFFS.totalBytes() - SPIFFS.usedBytes()) / 1024);
+  debugOut(" kb\n\n");
 }
 
+void printESPInfo(){
+  debugOutln("ESP info:");
+  debugOut("Chip Model: ");
+  debugOut(ESP.getChipModel());
+  debugOut("\nChip Cores: ");
+  debugOut(ESP.getChipCores());
+  debugOut("\nCPU freq: ");
+  debugOut(ESP.getCpuFreqMHz());
+  debugOut(" Mhz\nFlash size: ");
+  debugOut(ESP.getFlashChipSize() / 1024 / 1024);
+  debugOut(" MB\n");
+}
 
 void setup() {
   Serial.begin(115200);
   setupio();
   SPIFFS.begin(true);
 
-  debugOut("SPIFFS info:\n");
-  debugOut("Total:");
-  debugOut(SPIFFS.totalBytes() / 1024);
-  debugOut(" kb\nUsed:");
-  debugOut(SPIFFS.usedBytes() / 1024);
-  debugOut(" kb\nFree:");
-  debugOut((SPIFFS.totalBytes() - SPIFFS.usedBytes()) / 1024);
-  debugOut(" kb\n\n");
+  printSPIFFSInfo();
+  printESPInfo();
 
-  applySettings();
+  initSettings();
 
-  if(digitalRead(B_DARUN) && autostartPath != "OFF")
+
+  duckyScript.setStandartDelay(settings["STANDARTDELAY"]);
+
+  if(digitalRead(B_DARUN) && settings["AUTOSTART"] != "OFF")
   {
-    if(ledsenabled) digitalWrite(L_OK, HIGH);
-    duckyScript.run("/payloads/" + autostartPath);
-    if(ledsenabled) digitalWrite(L_OK, LOW);
+    if(settings["LEDSENABLED"]) digitalWrite(L_OK, HIGH);
+    duckyScript.run("/payloads/" + settings["AUTOSTART"].as<String>());
+    if(settings["LEDSENABLED"]) digitalWrite(L_OK, LOW);
   } 
-  if(wlanonboot){
+  if(settings["WLANONBOOT"]){
     setupWlan();
     wlanActive = true;
-    digitalWrite(L_WLAN, wlanActive && ledsenabled);
+    digitalWrite(L_WLAN, wlanActive && settings["LEDSENABLED"]);
   } 
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
   wlanloop();
 
   int b1 = !digitalRead(B_1);
@@ -110,28 +104,28 @@ void loop() {
       setupWlan(); 
     }
     wlanActive = !wlanActive;
-    digitalWrite(L_WLAN, wlanActive && ledsenabled);
+    digitalWrite(L_WLAN, wlanActive && settings["LEDSENABLED"]);
     delay(500);
   } 
 
   if(needToRunPayload){
-    if(ledsenabled) digitalWrite(L_ERR, LOW);
-    if(ledsenabled) digitalWrite(L_OK, HIGH);
+    if(settings["LEDSENABLED"]) digitalWrite(L_ERR, LOW);
+    if(settings["LEDSENABLED"]) digitalWrite(L_OK, HIGH);
     duckyScript.run("/payloads/" + payloadToRun);
-    if(ledsenabled) digitalWrite(L_OK, LOW);
+    if(settings["LEDSENABLED"]) digitalWrite(L_OK, LOW);
     needToRunPayload = false;
   }
 
   if(!b1 && !b2 && !b3 && !b4) return;
 
-  if(ledsenabled) digitalWrite(L_ERR, LOW);
+  if(settings["LEDSENABLED"]) digitalWrite(L_ERR, LOW);
 
-  if(ledsenabled) digitalWrite(L_OK, HIGH);
-  if(b1) duckyScript.run("/payloads/" + Button1Path);
-  if(b2) duckyScript.run("/payloads/" + Button2Path);
-  if(b3) duckyScript.run("/payloads/" + Button3Path);
-  if(b4) duckyScript.run("/payloads/" + Button4Path);
-  if(ledsenabled) digitalWrite(L_OK, LOW);
+  if(settings["LEDSENABLED"]) digitalWrite(L_OK, HIGH);
+  if(b1) duckyScript.run("/payloads/" + settings["BUTTON1"].as<String>());
+  if(b2) duckyScript.run("/payloads/" + settings["BUTTON2"].as<String>());
+  if(b3) duckyScript.run("/payloads/" + settings["BUTTON3"].as<String>());
+  if(b4) duckyScript.run("/payloads/" + settings["BUTTON4"].as<String>());
+  if(settings["LEDSENABLED"]) digitalWrite(L_OK, LOW);
 
   delay(100);
 }
