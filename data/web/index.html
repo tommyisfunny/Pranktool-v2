@@ -10,43 +10,9 @@
 <body>
     <h1>Pranktool</h1>
     <h2>Settings</h2>
-    <table>
-    <tr>
-        <th>Autostart:</th><th><select id="AUTOSTART"><option value="OFF">OFF</option> </select></th>
-    </tr>
-    <tr>
-        <th>Button 1:</th><th><select id="BUTTON1"></select></th>
-    </tr>
-    <tr>
-        <th>Button 2:</th><th><select id="BUTTON2"></select></th>
-    </tr>
-    <tr>
-        <th>Button 3:</th><th><select id="BUTTON3"></select></th>
-    </tr>
-    <tr>
-        <th>Button 4:</th><th><select id="BUTTON4"></select></th>
-    </tr>
-    <tr>
-        <th>Standart delay:</th><th><input type="number" id="STANDARTDELAY" min="0"></th>
-    </tr>
-    <tr>
-        <th>SSID:</th><th><input type="text" id="SSID"></th>
-    </tr>
-    <tr>
-        <th>Password:</th><th><input type="text" id="PASSWORD"></th>
-    </tr>
-    <tr>
-        <th>Hidden:</th><th><input type="checkbox" id="HIDDEN"></th>
-    </tr>
-    <tr>
-        <th>WLAN on boot:</th><th><input type="checkbox" id="WLANONBOOT"></th>
-    </tr>
-    <tr>
-        <th>Enable LEDs:</th><th><input type="checkbox" id="LEDSENABLED"></th>
-    </tr>
-    </table>
+    <div id="settings"></div>
+    <button id="saveSettings">Save settings</button>
 
-    <button id="changeSettings">Apply changes</button>
     <h2>Available payloads</h2>
     <div id="payloads"></div>
 
@@ -86,6 +52,6 @@
             <button id="cancelCreate">Cancel</button>
         </div>
 
-    <script src="script.js"></script>
+    <script type="module" src="script.js"></script>
 </body>
 </html>

@@ -45,7 +45,7 @@ void printSPIFFSInfo(){
   debugOut(SPIFFS.usedBytes() / 1024);
   debugOut(" kb\nFree: ");
   debugOut((SPIFFS.totalBytes() - SPIFFS.usedBytes()) / 1024);
-  debugOut(" kb\n\n");
+  debugOutln(" kb\n");
 }
 
 void printESPInfo(){
@@ -58,7 +58,7 @@ void printESPInfo(){
   debugOut(ESP.getCpuFreqMHz());
   debugOut(" Mhz\nFlash size: ");
   debugOut(ESP.getFlashChipSize() / 1024 / 1024);
-  debugOut(" MB\n");
+  debugOutln(" MB\n");
 }
 
 void setup() {

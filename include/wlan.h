@@ -49,6 +49,26 @@ void handleUpload(AsyncWebServerRequest *request, String filename, size_t index,
   }
 }
 
+void handleSettingsUpload(AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total) {
+  String json = "";
+  for (size_t i = 0; i < len; i++) {
+    json += (char)data[i];
+  }
+
+  // Parse the JSON
+  DeserializationError error = deserializeJson(settings, json);
+  if (error) {
+    debugOut("JSON parse failed: ");
+    debugOutln(error.c_str());
+    request->send(400, "text/plain", "JSON parse failed");
+    return;
+  }
+  storeSettings();
+  duckyScript.setStandartDelay(settings["STANDARTDELAY"]);
+
+  request->send(200, "text/plain", "ok");
+}
+
 String processor(const String& var) {
   Serial.println("Processor: " + var);
   if(var == "FILECONTENT"){
@@ -108,6 +128,11 @@ void setupWlan(){
         request->send(200, "text/plain", "OK");
     });
 
+    server.on("/saveSettings", HTTP_POST, [] (AsyncWebServerRequest *request) {
+        debugOutln("Save settings request");
+        request->send(200, "text/plain", "OK");
+    }, NULL, handleSettingsUpload);
+
     server.on("/getSettings", HTTP_GET, [] (AsyncWebServerRequest *request) {
         debugOutln("Get settings request:");
 
@@ -115,6 +140,16 @@ void setupWlan(){
         serializeJson(settings, settingsString);
         debugOutln(settingsString);
         request->send(200, "application/json", settingsString);
+    });
+
+    server.on("/getSettingsInfo", HTTP_GET, [] (AsyncWebServerRequest *request) {
+        debugOutln("Get info request:");
+
+        File file = SPIFFS.open(SETTINGS_INFO_FILE, "r");
+        String infoString = file.readString();
+        file.close();
+        debugOutln(infoString);
+        request->send(200, "application/json", infoString);
     });
 
     server.on("/getPayloads", HTTP_GET, [] (AsyncWebServerRequest *request) {

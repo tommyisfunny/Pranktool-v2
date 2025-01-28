@@ -2,27 +2,32 @@
     "fields":[
         {
             "name":"AUTOSTART",
-            "type":"text",
+            "type":"select",
+            "selectFrom":"payloads",
             "default":"OFF"
         },
         {
             "name":"BUTTON1",
-            "type":"text",
+            "type":"select",
+            "selectFrom":"payloads",
             "default":"hacking.dd"
         },
         {
             "name":"BUTTON2",
-            "type":"text",
+            "type":"select",
+            "selectFrom":"payloads",
             "default":"altf4.dd"
         },
         {
             "name":"BUTTON3",
-            "type":"text",
+            "type":"select",
+            "selectFrom":"payloads",
             "default":"shutdown.dd"
         },
         {
             "name":"BUTTON4",
-            "type":"text",
+            "type":"select",
+            "selectFrom":"payloads",
             "default":"autostart.dd"
         },
         {
@@ -32,12 +37,12 @@
         },
         {
             "name":"SSID",
-            "type":"text",
+            "type":"string",
             "default":"Pranktool"
         },
         {
             "name":"PASSWORD",
-            "type":"text",
+            "type":"string",
             "default":""
         },
         {

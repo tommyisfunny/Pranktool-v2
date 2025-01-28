@@ -1,16 +1,9 @@
+import { handleSettings } from "./settings.js";
+
 window.onload = async function (){
-    var autostart = document.getElementById("AUTOSTART");
-    var button1 = document.getElementById("BUTTON1");
-    var button2 = document.getElementById("BUTTON2");
-    var button3 = document.getElementById("BUTTON3");
-    var button4 = document.getElementById("BUTTON4");
-    var standartDelay = document.getElementById("STANDARTDELAY");
-    var SSID = document.getElementById("SSID");
-    var password = document.getElementById("PASSWORD");
-    var hidden = document.getElementById("HIDDEN");
-    var wlanonboot = document.getElementById("WLANONBOOT");
-    var ledsenabled = document.getElementById("LEDSENABLED");
     var updateButton = document.getElementById("update");
+
+    handleSettings();
 
     var input = document.getElementById("payloadUploadSelector");
     input.addEventListener("change", ()=>{
@@ -32,47 +25,10 @@ window.onload = async function (){
           
     });
 
-    let  response = await fetch("/getSettings");
-    const settingsData = await response.json();
-    
-    response = await fetch("/getPayloads");
+    let response = await fetch("/getPayloads");
     var availablePayloads = await response.json();
 
     createPayloadList(availablePayloads);
-
-    Object.keys(settingsData).forEach((id)=>{
-        createSettingsOptions(id, settingsData, availablePayloads);
-    });
-
-
-    document.getElementById("changeSettings").onclick = function (){
-        var url = "changeSettings?";
-        url += "autostart=" + autostart.value;
-        url += "&&button1=" + button1.value;
-        url += "&&button2=" + button2.value;
-        url += "&&button3=" + button3.value;
-        url += "&&button4=" + button4.value;
-        url +=  "&&standartDelay=" + standartDelay.value;
-        url += "&&SSID=" + SSID.value;
-        url += "&&password=" + password.value;
-        url += "&&hidden=" + (hidden.checked ? "true" : "false");
-        url += "&&wlanonboot=" + (wlanonboot.checked ? "true" : "false");
-        url += "&&ledsenabled=" + (ledsenabled.checked ? "true" : "false");
-
-        if(password.value.length < 8 && password.value.length != 0){
-            alert("password to short");
-            return;
-        }
-
-        fetch(url).then(()=>{
-            var savedDialog = document.getElementById("settingsSavedDialog");
-
-            savedDialog.showModal();
-            window.setTimeout(()=>{
-                savedDialog.close();
-            }, 2000);
-        });
-    }
 
     var createPayloadDialog = document.getElementById("createPayloadDialog");
 
@@ -177,31 +133,5 @@ function createPayloadList(data){
             location.reload();
         });
         confirmDeleteDialog.close();
-    }
-}
-
-function createSettingsOptions(id, settingsData, availablePayloads){
-    var element = document.getElementById(id);
-
-    console.log("getting element: " + id);
-
-    if(element.nodeName == "INPUT"){
-        if(element.type == "checkbox"){
-            console.log("checkbox set to: " + settingsData[id]);
-            element.checked = settingsData[id];
-        } else {
-            console.log("input set to: " + settingsData[id]);
-            element.value = settingsData[id];
-        }
-    } else {
-        availablePayloads.forEach((payload) => {
-            var option = document.createElement("option");
-            option.innerText = payload;
-            option.value = payload;
-            if(payload == settingsData[id]){
-                option.selected = true;
-            }
-            element.appendChild(option);
-        });
     }
 }

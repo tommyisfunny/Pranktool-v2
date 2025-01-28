@@ -12,3 +12,4 @@ extern JsonDocument settings;
 void initSettings();
 void storeSettings();
 void loadSettings();
+void applyFallbackSettings();

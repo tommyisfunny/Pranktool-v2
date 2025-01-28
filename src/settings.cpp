@@ -43,7 +43,7 @@ void initSettings(){
       settingsChanged = true;
       String defaultVal = settingsInfo["fields"][i]["default"];
       debugOutln("Settings file does not contain key: " + key + ", adding it with default value: " + defaultVal);
-      settings[key] = defaultVal;
+      settings[key] = settingsInfo["fields"][i]["default"];
     }
   }
 
