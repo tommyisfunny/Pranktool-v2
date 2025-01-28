@@ -89,5 +89,7 @@ void applyFallbackSettings(){
   settings["SSID"] = "Pranktool";
   settings["PASSWORD"] = "";
   settings["HIDDEN"] = false;
+  settings["WLANONBOOT"] = true;
+  settings["LEDSENABLED"] = true;
   storeSettings();
 }
