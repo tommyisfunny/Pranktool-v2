@@ -4,12 +4,13 @@
 #include <AsyncTCP.h>
 #include <ESPAsyncWebServer.h>
 #include <ElegantOTA.h>
-#include <SPIFFS.h>
 #include <ArduinoJson.h>
+#include <myspiffs.hpp>
 
 #include <settings.h>
 #include <hardwaredefs.h>
 #include <debugOut.h>
+#include "DuckyScript.h"
 
 
 extern DuckyScript duckyScript;
@@ -17,6 +18,8 @@ extern DuckyScript duckyScript;
 extern bool needToRunPayload;
 extern String payloadToRun;
 
+extern SPIFFS userFS;
+extern SPIFFS deviceFS;
 
 String editPayload = "";
 
@@ -29,7 +32,7 @@ void handleUpload(AsyncWebServerRequest *request, String filename, size_t index,
   if (!index) {
     logmessage = "Upload Start: " + String(filename);
     // open the file on first call and store the file handle in the request object
-    request->_tempFile = SPIFFS.open("/payloads/" + filename, "w");
+    request->_tempFile = userFS.open("/payloads/" + filename, "w");
     debugOutln(logmessage);
   }
 
@@ -72,7 +75,7 @@ void handleSettingsUpload(AsyncWebServerRequest *request, uint8_t *data, size_t 
 String processor(const String& var) {
   Serial.println("Processor: " + var);
   if(var == "FILECONTENT"){
-    File fs = SPIFFS.open("/payloads/" + editPayload);
+    File fs = userFS.open("/payloads/" + editPayload);
     String fileContent = fs.readString();
     fs.close();
     fileContent.replace("%", "%%");
@@ -83,6 +86,25 @@ String processor(const String& var) {
   }
 
   return var;
+}
+
+void onOTAStart(){
+  debugOutln("OTA update started...");
+}
+
+void onOTAProgress(size_t progress, size_t total){
+  debugOut("Progress: ");
+  debugOut(((int)progress/(int)total)*100);
+  debugOutln("%");
+}
+
+void onOTAEnd(bool success){
+  if(success){
+    debugOutln("OTA update successful");
+    debugOutln("Rebooting...");
+  } else {
+    debugOutln("OTA update failed");
+  }
 }
 
 void setupWlan(){
@@ -104,28 +126,7 @@ void setupWlan(){
     debugOutln(IP.toString());
 
     server.on("/", HTTP_GET, [] (AsyncWebServerRequest *request){
-      request->send(SPIFFS, "/web/index.html");
-    });
-
-    server.on("/changeSettings", HTTP_GET, [] (AsyncWebServerRequest *request) {
-        debugOutln("Change settings request");
-
-        if(request->hasParam("autostart"))      settings["AUTOSTART"]     = request->getParam("autostart")->value();
-        if(request->hasParam("button1"))        settings["BUTTON1"]       = request->getParam("button1")->value();
-        if(request->hasParam("button2"))        settings["BUTTON2"]       = request->getParam("button2")->value();
-        if(request->hasParam("button3"))        settings["BUTTON3"]       = request->getParam("button3")->value();
-        if(request->hasParam("button4"))        settings["BUTTON4"]       = request->getParam("button4")->value();
-        if(request->hasParam("standartDelay"))  settings["STANDARTDELAY"] = request->getParam("standartDelay")->value();
-        if(request->hasParam("SSID"))           settings["SSID"]          = request->getParam("SSID")->value();
-        if(request->hasParam("password"))       settings["PASSWORD"]      = request->getParam("password")->value();
-        if(request->hasParam("hidden"))         settings["HIDDEN"]        = request->getParam("hidden")->value() == "true";
-        if(request->hasParam("wlanonboot"))     settings["WLANONBOOT"]    = request->getParam("wlanonboot")->value() == "true";
-        if(request->hasParam("ledsenabled"))    settings["LEDSENABLED"]   = request->getParam("ledsenabled")->value() == "true";
-        
-        storeSettings();
-        duckyScript.setStandartDelay(settings["STANDARTDELAY"]);
-
-        request->send(200, "text/plain", "OK");
+      request->send(deviceFS, "/web/index.html");
     });
 
     server.on("/saveSettings", HTTP_POST, [] (AsyncWebServerRequest *request) {
@@ -138,24 +139,24 @@ void setupWlan(){
 
         String settingsString;
         serializeJson(settings, settingsString);
-        debugOutln(settingsString);
+        //debugOutln(settingsString);
         request->send(200, "application/json", settingsString);
     });
 
     server.on("/getSettingsInfo", HTTP_GET, [] (AsyncWebServerRequest *request) {
         debugOutln("Get info request:");
 
-        File file = SPIFFS.open(SETTINGS_INFO_FILE, "r");
+        File file = deviceFS.open(SETTINGS_INFO_FILE, "r");
         String infoString = file.readString();
         file.close();
-        debugOutln(infoString);
+        //debugOutln(infoString);
         request->send(200, "application/json", infoString);
     });
 
     server.on("/getPayloads", HTTP_GET, [] (AsyncWebServerRequest *request) {
         debugOutln("Get payloads request:");
         String json = "[";
-        File root = SPIFFS.open("/payloads");
+        File root = userFS.open("/payloads");
         File file = root.openNextFile();
 
         while(file){
@@ -173,7 +174,7 @@ void setupWlan(){
     server.on("/getOthers", HTTP_GET, [] (AsyncWebServerRequest *request) {
         debugOutln("Get others request:");
         String json = "[";
-        File root = SPIFFS.open("/payloads");
+        File root = userFS.open("/payloads");
         File file = root.openNextFile();
 
         while(file){
@@ -197,7 +198,7 @@ void setupWlan(){
         if(request->hasArg("payload")){
           String name = request->getParam("payload")->value();
           debugOutln("deleting " + name);
-          SPIFFS.remove("/payloads/" + name);
+          userFS.remove("/payloads/" + name);
         }
 
         request->send(200, "plain/text", "ok");
@@ -222,7 +223,7 @@ void setupWlan(){
           editPayload = name;
         }
 
-        request->send(SPIFFS, "/web/edit.html", "text/html", false, processor);
+        request->send(deviceFS, "/web/edit.html", "text/html", false, processor);
     });
 
     server.on("/createPayload", HTTP_GET, [] (AsyncWebServerRequest *request) {
@@ -230,13 +231,17 @@ void setupWlan(){
         if(request->hasArg("name")){
           String name = request->getParam("name")->value();
           debugOutln("creating " + name);
-          SPIFFS.open("/payloads/" + name, "w").close();
+          userFS.open("/payloads/" + name, "w").close();
         }
 
         request->send(200, "plain/text", "ok");
     });
 
-    server.serveStatic("/", SPIFFS, "/web/").setCacheControl("no-cache, no-store, must-revalidate");
+    server.serveStatic("/", deviceFS, "/web/").setCacheControl("no-cache, no-store, must-revalidate");
+
+    ElegantOTA.onStart(onOTAStart);
+    ElegantOTA.onProgress(onOTAProgress);
+    ElegantOTA.onEnd(onOTAEnd);
 
     ElegantOTA.begin(&server);
     server.begin();

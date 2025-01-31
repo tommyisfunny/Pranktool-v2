@@ -2,61 +2,72 @@
     "fields":[
         {
             "name":"AUTOSTART",
+            "lable":"Autostart:",
             "type":"select",
             "selectFrom":"payloads",
             "default":"OFF"
         },
         {
             "name":"BUTTON1",
+            "lable":"Button 1:",
             "type":"select",
             "selectFrom":"payloads",
             "default":"hacking.dd"
         },
         {
             "name":"BUTTON2",
+            "lable":"Button 2:",
             "type":"select",
             "selectFrom":"payloads",
             "default":"altf4.dd"
         },
         {
             "name":"BUTTON3",
+            "lable":"Button 3:",
             "type":"select",
             "selectFrom":"payloads",
             "default":"shutdown.dd"
         },
         {
             "name":"BUTTON4",
+            "lable":"Button 4:",
             "type":"select",
             "selectFrom":"payloads",
             "default":"autostart.dd"
         },
         {
             "name":"STANDARTDELAY",
+            "lable":"Delay multiplier:",
             "type":"number",
             "default":1
         },
         {
             "name":"SSID",
+            "lable":"WLAN name:",
             "type":"string",
             "default":"Pranktool"
         },
         {
             "name":"PASSWORD",
+            "lable":"WLAN password:",
             "type":"string",
             "default":""
         },
         {
             "name":"HIDDEN",
+            "lable":"Hide WLAN?",
             "type":"boolean",
             "default":false
         },
         {
             "name":"WLANONBOOT",
+            "lable":"WLAN on boot?",
             "type":"boolean",
             "default":true
         },
         {
             "name":"LEDSENABLED",
+            "lable":"Enable LEDs?",
             "type":"boolean",
             "default":true
         }

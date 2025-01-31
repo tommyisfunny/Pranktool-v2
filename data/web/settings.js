@@ -40,7 +40,7 @@ function createSettingsTable(){
     fields.forEach((field)=>{
         var tr = document.createElement("tr");
         var th = document.createElement("th");
-        th.innerHTML = field.name + ":";
+        th.innerHTML = field.lable;
         tr.appendChild(th);
 
         th = document.createElement("th");

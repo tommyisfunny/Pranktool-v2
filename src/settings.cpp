@@ -4,7 +4,7 @@
 JsonDocument settings;
 
 void initSettings(){
-  if(!SPIFFS.exists(SETTINGS_FILE)){
+  if(!userFS.exists(SETTINGS_FILE)){
     debugOutln("Settings file does not exist, creating new one");
     storeSettings();
   }
@@ -13,14 +13,14 @@ void initSettings(){
 
   JsonDocument settingsInfo;
 
-  if(!SPIFFS.exists(SETTINGS_INFO_FILE)){
+  if(!deviceFS.exists(SETTINGS_INFO_FILE)){
     debugOutln("Settings info file does not exist!!!!");
     applyFallbackSettings();
     return;
   }
 
  
-  File file = SPIFFS.open(SETTINGS_INFO_FILE, "r");
+  File file = deviceFS.open(SETTINGS_INFO_FILE, "r");
   if (!file) {
     debugOutln("Failed to open settings info file for reading");
     applyFallbackSettings();
@@ -53,7 +53,7 @@ void initSettings(){
 
 
 void storeSettings(){
-  File file = SPIFFS.open(SETTINGS_FILE, "w");
+  File file = userFS.open(SETTINGS_FILE, "w");
   if (!file) {
     debugOutln("Failed to open settings file for writing");
     return;
@@ -67,7 +67,7 @@ void storeSettings(){
 
 
 void loadSettings(){
-  File file = SPIFFS.open(SETTINGS_FILE, "r");
+  File file = userFS.open(SETTINGS_FILE, "r");
   if (!file) {
     debugOutln("Failed to open settings file for reading");
     return;

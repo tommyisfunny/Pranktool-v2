@@ -2,7 +2,7 @@
 #include <Arduino.h>
 
 #include <FileHelper.h>
-#include <SPIFFS.h>
+#include <FS.h>
 #include <hidkeyboardX.h>
 #include <DuckyScriptSpecialKeys.h>
 #include <hardwaredefs.h>
@@ -11,12 +11,13 @@
 class DuckyScript{
     public:
         DuckyScript();
-        void begin();
+        void begin(FS &fs);
         void run(String path);
         void setStandartDelay(int delay);
         u_int16_t standartDelay;
 
     private:
+        FS *fs;
         void parseLine(String line);
         
         void _delay(String arg);

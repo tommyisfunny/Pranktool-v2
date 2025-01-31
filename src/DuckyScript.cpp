@@ -9,8 +9,8 @@ DuckyScript::DuckyScript(){
     this->standartDelay = 1;
 }
 
-void DuckyScript::begin(){
-    
+void DuckyScript::begin(FS &fs){
+    this->fs = &fs;
 }
 
 void DuckyScript::setStandartDelay(int delay){
@@ -19,11 +19,11 @@ void DuckyScript::setStandartDelay(int delay){
 
 void DuckyScript::run(String path){
     debugOutln("Running " + path);
-    File fs = SPIFFS.open(path);
+    File file = fs->open(path, "r");
     String line = "";
     char _char = ' ';
-    while(fs.available()){
-        _char = fs.read();
+    while(file.available()){
+        _char = file.read();
         line += _char;
         if(_char != '\n') continue;
         this->parseLine(line);
@@ -31,7 +31,7 @@ void DuckyScript::run(String path){
     }
     if(line != "") this->parseLine(line);
 
-    fs.close();
+    file.close();
 }
 
 void DuckyScript::parseLine(String line){
@@ -89,10 +89,10 @@ void DuckyScript::setLED(String arg){
 }
 
 void DuckyScript::pasteFile(String arg){
-    File fs = SPIFFS.open("/payloads/" + arg);
-    if(!fs) return;
-    String cnt = fs.readString();
-    fs.close();
+    File file = fs->open("/payloads/" + arg);
+    if(!file) return;
+    String cnt = file.readString();
+    file.close();
     keyboard.sendString(cnt);
 }
 

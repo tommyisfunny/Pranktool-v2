@@ -1,5 +1,7 @@
 {
     "files.associations": {
-        "cctype": "cpp"
+        "cctype": "cpp",
+        "*.tcc": "cpp",
+        "fstream": "cpp"
     }
 }

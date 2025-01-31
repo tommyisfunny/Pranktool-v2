@@ -1,5 +1,5 @@
 #include <Arduino.h>
-#include <SPIFFS.h>
+#include <myspiffs.hpp>
 #include <debugOut.h>
 #include <FileHelper.h>
 
@@ -9,6 +9,9 @@ bool wlanActive = false;
 
 bool needToRunPayload = false;
 String payloadToRun = "";
+
+SPIFFS userFS("userData");
+SPIFFS deviceFS("deviceData");
 
 #include <DuckyScript.h>
 #include <wlan.h>
@@ -28,7 +31,7 @@ void setupio() {
 
   keyboard.setBaseEP(3);
   keyboard.begin();
-  duckyScript.begin();
+  duckyScript.begin(userFS);
 
   // CDCUSBSerial seems to mess with the keyboard
   //if (!CDCUSBSerial.begin()) Serial.println("Failed to start CDC USB stack");
@@ -37,16 +40,37 @@ void setupio() {
   delay(1000); // time to get recognised
 }
 
-void printSPIFFSInfo(){
-  debugOut("SPIFFS info:\n");
-  debugOut("Total: ");
-  debugOut(SPIFFS.totalBytes() / 1024);
+void printSPIFFSInfo(SPIFFS &spiffs){
+  debugOut("info on ");
+  debugOut(spiffs.mountedPartition());
+  debugOut("\nTotal: ");
+  debugOut(spiffs.totalBytes() / 1024);
   debugOut(" kb\nUsed: ");
-  debugOut(SPIFFS.usedBytes() / 1024);
+  debugOut(spiffs.usedBytes() / 1024);
   debugOut(" kb\nFree: ");
-  debugOut((SPIFFS.totalBytes() - SPIFFS.usedBytes()) / 1024);
+  debugOut((spiffs.totalBytes() - spiffs.usedBytes()) / 1024);
   debugOutln(" kb\n");
 }
+
+void setupSPIFFS(){
+  if(!userFS.begin(false, "/userData")){
+    debugOutln("Failed to mount user SPIFFS");
+    return;
+  }
+  if(!deviceFS.begin(false, "/deviceData")){
+    debugOutln("Failed to mount device SPIFFS");
+    return;
+  }
+
+  printSPIFFSInfo(userFS);
+  printSPIFFSInfo(deviceFS);
+
+
+  //fileHelper.listDir(userFS, "/", 5);
+  //fileHelper.listDir(deviceFS, "/", 5);
+}
+
+
 
 void printESPInfo(){
   debugOutln("ESP info:");
@@ -64,9 +88,9 @@ void printESPInfo(){
 void setup() {
   Serial.begin(115200);
   setupio();
-  SPIFFS.begin(true);
 
-  printSPIFFSInfo();
+  setupSPIFFS();
+
   printESPInfo();
 
   initSettings();

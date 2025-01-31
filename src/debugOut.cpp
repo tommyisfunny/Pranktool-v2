@@ -13,6 +13,11 @@ void debugOutln(const char* msg){
   //CDCUSBSerial.println(msg);
 }
 
+void debugOutln(int msg){
+  Serial.println(msg);
+  //CDCUSBSerial.println(msg);
+}
+
 void debugOut(String msg){
   Serial.print(msg);
   //CDCUSBSerial.print(msg);
