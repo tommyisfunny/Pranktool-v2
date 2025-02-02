@@ -6,20 +6,25 @@ FileHelper fileHelper;
 
 
 DuckyScript::DuckyScript(){
-    this->standartDelay = 1;
+    standartDelay = 1;
+    currentPayload = "";
 }
 
-void DuckyScript::begin(FS &fs){
+void DuckyScript::begin(FS &fs, const char* payloadDir){
     this->fs = &fs;
+    this->payloadDir = payloadDir;
 }
 
 void DuckyScript::setStandartDelay(int delay){
-    this->standartDelay = delay;
+    standartDelay = delay;
 }
 
-void DuckyScript::run(String path){
-    debugOutln("Running " + path);
-    File file = fs->open(path, "r");
+void DuckyScript::run(String payload){
+    String fullPath = payloadDir + "/" + payload + "/" + payload + ".dd";
+    debugOutln("Running " + fullPath);
+    currentPayload = payload;
+
+    File file = fs->open(fullPath, "r");
     String line = "";
     char _char = ' ';
     while(file.available()){
@@ -52,8 +57,8 @@ void DuckyScript::parseLine(String line){
     String lowerCmd = command;
     lowerCmd.toLowerCase();
 
-    debugOutln("Command: " + command);
-    debugOutln("Arg: " + arg);
+    //debugOutln("Command: " + command);
+    //debugOutln("Arg: " + arg);
 
     if     (lowerCmd == "delay") this->_delay(arg);
     else if(lowerCmd == "string") this->string(arg);
@@ -89,7 +94,7 @@ void DuckyScript::setLED(String arg){
 }
 
 void DuckyScript::pasteFile(String arg){
-    File file = fs->open("/payloads/" + arg);
+    File file = fs->open(payloadDir + "/" + currentPayload + "/" + arg);
     if(!file) return;
     String cnt = file.readString();
     file.close();

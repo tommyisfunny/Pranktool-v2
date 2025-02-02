@@ -11,13 +11,16 @@
 class DuckyScript{
     public:
         DuckyScript();
-        void begin(FS &fs);
-        void run(String path);
+        void begin(FS &fs, const char* payloadDir);
+        void run(String payload);
         void setStandartDelay(int delay);
         u_int16_t standartDelay;
 
     private:
         FS *fs;
+        String payloadDir;
+        String currentPayload;
+
         void parseLine(String line);
         
         void _delay(String arg);

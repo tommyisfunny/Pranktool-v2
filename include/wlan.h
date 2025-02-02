@@ -5,7 +5,7 @@
 #include <ESPAsyncWebServer.h>
 #include <ElegantOTA.h>
 #include <ArduinoJson.h>
-#include <myspiffs.hpp>
+#include <LittleFS.h>
 
 #include <settings.h>
 #include <hardwaredefs.h>
@@ -18,10 +18,13 @@ extern DuckyScript duckyScript;
 extern bool needToRunPayload;
 extern String payloadToRun;
 
-extern SPIFFS userFS;
-extern SPIFFS deviceFS;
+extern FileHelper fileHelper;
+
+extern fs::LittleFSFS userFS;
+extern fs::LittleFSFS deviceFS;
 
 String editPayload = "";
+
 
 AsyncWebServer server(80);
 
@@ -32,7 +35,11 @@ void handleUpload(AsyncWebServerRequest *request, String filename, size_t index,
   if (!index) {
     logmessage = "Upload Start: " + String(filename);
     // open the file on first call and store the file handle in the request object
-    request->_tempFile = userFS.open("/payloads/" + filename, "w");
+
+    String uploadPath = "";
+    if(request->hasParam("path")) uploadPath = request->getParam("path")->value();
+
+    request->_tempFile = userFS.open("/payloads/" + uploadPath + filename, "w");
     debugOutln(logmessage);
   }
 
@@ -92,12 +99,6 @@ void onOTAStart(){
   debugOutln("OTA update started...");
 }
 
-void onOTAProgress(size_t progress, size_t total){
-  debugOut("Progress: ");
-  debugOut(((int)progress/(int)total)*100);
-  debugOutln("%");
-}
-
 void onOTAEnd(bool success){
   if(success){
     debugOutln("OTA update successful");
@@ -155,50 +156,74 @@ void setupWlan(){
 
     server.on("/getPayloads", HTTP_GET, [] (AsyncWebServerRequest *request) {
         debugOutln("Get payloads request:");
-        String json = "[";
-        File root = userFS.open("/payloads");
-        File file = root.openNextFile();
+        JsonDocument json;
+        File root = userFS.open("/payloads/");
+        File dir = root.openNextFile();
 
-        while(file){
-            String name = file.name();
-            String ext = name.substring(name.lastIndexOf(".") + 1);
-            /*if(ext == "dd")*/ json += "\"" + name + "\",";
-            file = root.openNextFile();
+        String name;
+        String path;
+
+        while(dir){
+            path = dir.path();
+            name = dir.name();
+
+            //debugOutln(path + ":");
+
+            if(dir.isDirectory()){
+              File file = dir.openNextFile();
+              while(file){
+                //debugOutln(file.name());
+                json[name].add(file.name());
+                file = dir.openNextFile();
+              }
+            }
+            dir = root.openNextFile();
         }
-        json[json.length() - 1] = ']';
-        debugOutln(json);
+        
+        String jsonString;
+        serializeJson(json, jsonString);
+        //debugOutln(jsonString);
 
-        request->send(200, "application/json", json);
+        request->send(200, "application/json", jsonString);
     });
 
-    server.on("/getOthers", HTTP_GET, [] (AsyncWebServerRequest *request) {
-        debugOutln("Get others request:");
-        String json = "[";
-        File root = userFS.open("/payloads");
-        File file = root.openNextFile();
-
-        while(file){
-            String name = file.name();
-            String ext = name.substring(name.lastIndexOf(".") + 1);
-            if(ext != "dd") json += "\"" + name + "\",";
-            file = root.openNextFile();
+    server.on("/getFile", HTTP_GET, [] (AsyncWebServerRequest *request) {
+        debugOutln("Get file request:");
+        if(request->hasParam("file")){
+          String name = request->getParam("file")->value();
+          debugOutln(name);
+          File file = userFS.open("/payloads/" + name);
+          if(file){
+            String fileContent = file.readString();
+            file.close();
+            request->send(200, "text/plain", fileContent);
+          } else {
+            request->send(400, "text/plain", "File not found");
+          }
+        } else {
+          request->send(400, "text/plain", "No file specified");
         }
-        json[json.length() - 1] = ']';
-        debugOutln(json);
-
-        request->send(200, "application/json", json);
     });
 
-    server.on("/uploadPayload", HTTP_POST, [](AsyncWebServerRequest *request) {
+    server.on("/uploadFile", HTTP_POST, [](AsyncWebServerRequest *request) {
         request->send(200);
     }, handleUpload);
 
-    server.on("/deletePayload", HTTP_GET, [] (AsyncWebServerRequest *request) {
-        debugOutln("Delete payload request:");
-        if(request->hasArg("payload")){
-          String name = request->getParam("payload")->value();
+    server.on("/deleteFile", HTTP_GET, [] (AsyncWebServerRequest *request) {
+        debugOutln("Delete file request:");
+        if(request->hasParam("file")){
+          String name = request->getParam("file")->value();
           debugOutln("deleting " + name);
-          userFS.remove("/payloads/" + name);
+          File f = userFS.open("/payloads/" + name);
+          if(f.isDirectory()){
+            f.close();
+            debugOutln("removing dir");
+            fileHelper.deleteDir(userFS, ("/payloads/" + name).c_str());
+          } else {
+            f.close();
+            debugOutln("removing file");
+            if(!userFS.remove("/payloads/" + name)) debugOutln("Failed");
+          }
         }
 
         request->send(200, "plain/text", "ok");
@@ -206,7 +231,7 @@ void setupWlan(){
 
     server.on("/runPayload", HTTP_GET, [] (AsyncWebServerRequest *request) {
         debugOutln("Run payload request:");
-        if(request->hasArg("payload")){
+        if(request->hasParam("payload")){
           String name = request->getParam("payload")->value();
           payloadToRun = name;
           needToRunPayload = true;
@@ -217,7 +242,7 @@ void setupWlan(){
 
     server.on("/edit.html", HTTP_GET, [] (AsyncWebServerRequest *request) {
         debugOutln("Edit payloads request:");
-        if(request->hasArg("payload")){
+        if(request->hasParam("payload")){
           String name = request->getParam("payload")->value();
           debugOutln("/payloads/" + name);
           editPayload = name;
@@ -228,10 +253,12 @@ void setupWlan(){
 
     server.on("/createPayload", HTTP_GET, [] (AsyncWebServerRequest *request) {
         debugOutln("Create payload request:");
-        if(request->hasArg("name")){
+        if(request->hasParam("name")){
           String name = request->getParam("name")->value();
           debugOutln("creating " + name);
-          userFS.open("/payloads/" + name, "w").close();
+          File f = userFS.open("/payloads/" + name + "/" + name + ".dd", "w", true);
+          f.print("TEST");
+          f.close();
         }
 
         request->send(200, "plain/text", "ok");
@@ -240,7 +267,6 @@ void setupWlan(){
     server.serveStatic("/", deviceFS, "/web/").setCacheControl("no-cache, no-store, must-revalidate");
 
     ElegantOTA.onStart(onOTAStart);
-    ElegantOTA.onProgress(onOTAProgress);
     ElegantOTA.onEnd(onOTAEnd);
 
     ElegantOTA.begin(&server);

@@ -12,28 +12,28 @@
             "lable":"Button 1:",
             "type":"select",
             "selectFrom":"payloads",
-            "default":"hacking.dd"
+            "default":"hacking"
         },
         {
             "name":"BUTTON2",
             "lable":"Button 2:",
             "type":"select",
             "selectFrom":"payloads",
-            "default":"altf4.dd"
+            "default":"altf4"
         },
         {
             "name":"BUTTON3",
             "lable":"Button 3:",
             "type":"select",
             "selectFrom":"payloads",
-            "default":"shutdown.dd"
+            "default":"shutdown"
         },
         {
             "name":"BUTTON4",
             "lable":"Button 4:",
             "type":"select",
             "selectFrom":"payloads",
-            "default":"autostart.dd"
+            "default":"autostart"
         },
         {
             "name":"STANDARTDELAY",

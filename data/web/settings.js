@@ -19,7 +19,7 @@ export async function handleSettings(){
     settingsInfo = await response.json();
 
     response = await fetch("/getPayloads");
-    availablePayloads = await response.json();
+    availablePayloads = Object.keys(await response.json());
 
     console.log("Hello")
     console.log(settingsData);
@@ -86,7 +86,7 @@ function addSelectOptions(selectElement, options, selected=""){
 }
 
 function setupSaveSettings(){
-    saveSettingsButton.onclick = async ()=>{
+    saveSettingsButton.addEventListener("click", async ()=>{
         var newSettings = {};
 
         settingsInfo.fields.forEach((field)=>{
@@ -113,5 +113,5 @@ function setupSaveSettings(){
         } else {
             alert("Error saving settings");
         }
-    }
+    });
 }

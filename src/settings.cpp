@@ -53,7 +53,7 @@ void initSettings(){
 
 
 void storeSettings(){
-  File file = userFS.open(SETTINGS_FILE, "w");
+  File file = userFS.open(SETTINGS_FILE, "w", true);
   if (!file) {
     debugOutln("Failed to open settings file for writing");
     return;

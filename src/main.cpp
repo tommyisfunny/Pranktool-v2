@@ -1,5 +1,5 @@
 #include <Arduino.h>
-#include <myspiffs.hpp>
+#include <LittleFS.h>
 #include <debugOut.h>
 #include <FileHelper.h>
 
@@ -10,8 +10,8 @@ bool wlanActive = false;
 bool needToRunPayload = false;
 String payloadToRun = "";
 
-SPIFFS userFS("userData");
-SPIFFS deviceFS("deviceData");
+fs::LittleFSFS userFS;
+fs::LittleFSFS deviceFS;
 
 #include <DuckyScript.h>
 #include <wlan.h>
@@ -31,7 +31,7 @@ void setupio() {
 
   keyboard.setBaseEP(3);
   keyboard.begin();
-  duckyScript.begin(userFS);
+  duckyScript.begin(userFS, "/payloads");
 
   // CDCUSBSerial seems to mess with the keyboard
   //if (!CDCUSBSerial.begin()) Serial.println("Failed to start CDC USB stack");
@@ -40,34 +40,34 @@ void setupio() {
   delay(1000); // time to get recognised
 }
 
-void printSPIFFSInfo(SPIFFS &spiffs){
-  debugOut("info on ");
-  debugOut(spiffs.mountedPartition());
+void printLittleFSInfo(fs::LittleFSFS &fs){
+  debugOut("info on LittkeFS:\n");
+  //debugOut(fs.partitionLabel_);
   debugOut("\nTotal: ");
-  debugOut(spiffs.totalBytes() / 1024);
+  debugOut(fs.totalBytes() / 1024);
   debugOut(" kb\nUsed: ");
-  debugOut(spiffs.usedBytes() / 1024);
+  debugOut(fs.usedBytes() / 1024);
   debugOut(" kb\nFree: ");
-  debugOut((spiffs.totalBytes() - spiffs.usedBytes()) / 1024);
+  debugOut((fs.totalBytes() - fs.usedBytes()) / 1024);
   debugOutln(" kb\n");
 }
 
-void setupSPIFFS(){
-  if(!userFS.begin(false, "/userData")){
+void setupLittleFS(){
+  if(!userFS.begin(false, "/userData", 10, "userData")){
     debugOutln("Failed to mount user SPIFFS");
     return;
   }
-  if(!deviceFS.begin(false, "/deviceData")){
+  if(!deviceFS.begin(false, "/deviceData", 10, "deviceData")){
     debugOutln("Failed to mount device SPIFFS");
     return;
   }
 
-  printSPIFFSInfo(userFS);
-  printSPIFFSInfo(deviceFS);
+  printLittleFSInfo(userFS);
+  printLittleFSInfo(deviceFS);
 
 
-  //fileHelper.listDir(userFS, "/", 5);
-  //fileHelper.listDir(deviceFS, "/", 5);
+  fileHelper.listDir(userFS, "/");
+  fileHelper.listDir(deviceFS, "/");
 }
 
 
@@ -89,7 +89,7 @@ void setup() {
   Serial.begin(115200);
   setupio();
 
-  setupSPIFFS();
+  setupLittleFS();
 
   printESPInfo();
 
@@ -101,7 +101,7 @@ void setup() {
   if(digitalRead(B_DARUN) && settings["AUTOSTART"] != "OFF")
   {
     if(settings["LEDSENABLED"]) digitalWrite(L_OK, HIGH);
-    duckyScript.run("/payloads/" + settings["AUTOSTART"].as<String>());
+    duckyScript.run(settings["AUTOSTART"].as<String>());
     if(settings["LEDSENABLED"]) digitalWrite(L_OK, LOW);
   } 
   if(settings["WLANONBOOT"]){
@@ -135,7 +135,7 @@ void loop() {
   if(needToRunPayload){
     if(settings["LEDSENABLED"]) digitalWrite(L_ERR, LOW);
     if(settings["LEDSENABLED"]) digitalWrite(L_OK, HIGH);
-    duckyScript.run("/payloads/" + payloadToRun);
+    duckyScript.run(payloadToRun);
     if(settings["LEDSENABLED"]) digitalWrite(L_OK, LOW);
     needToRunPayload = false;
   }
@@ -145,10 +145,10 @@ void loop() {
   if(settings["LEDSENABLED"]) digitalWrite(L_ERR, LOW);
 
   if(settings["LEDSENABLED"]) digitalWrite(L_OK, HIGH);
-  if(b1) duckyScript.run("/payloads/" + settings["BUTTON1"].as<String>());
-  if(b2) duckyScript.run("/payloads/" + settings["BUTTON2"].as<String>());
-  if(b3) duckyScript.run("/payloads/" + settings["BUTTON3"].as<String>());
-  if(b4) duckyScript.run("/payloads/" + settings["BUTTON4"].as<String>());
+  if(b1) duckyScript.run(settings["BUTTON1"].as<String>());
+  if(b2) duckyScript.run(settings["BUTTON2"].as<String>());
+  if(b3) duckyScript.run(settings["BUTTON3"].as<String>());
+  if(b4) duckyScript.run(settings["BUTTON4"].as<String>());
   if(settings["LEDSENABLED"]) digitalWrite(L_OK, LOW);
 
   delay(100);

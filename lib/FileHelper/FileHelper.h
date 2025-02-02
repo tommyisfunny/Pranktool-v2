@@ -9,8 +9,9 @@ class FileHelper {
 public:
   bool debugOutput = true;
 
-  void listDir(fs::FS &fs, const char *dirname, uint8_t levels) {
-    Serial.printf("Listing directory: %s\r\n", dirname);
+  void listDir(fs::FS &fs, const char *dirname, uint8_t levels = 10, bool size = false) {
+    
+    //Serial.print(spaces);Serial.printf("Listing directory: %s\r\n", dirname);
 
     File root = fs.open(dirname);
     if (!root) {
@@ -25,16 +26,19 @@ public:
     File file = root.openNextFile();
     while (file) {
       if (file.isDirectory()) {
-        Serial.print("  DIR : ");
-        Serial.println(file.name());
+        Serial.print("DIR  ");
+        Serial.println(file.path());
         if (levels) {
-          listDir(fs, file.name(), levels - 1);
+          listDir(fs, file.path(), levels - 1, size);
         }
       } else {
-        Serial.print("  FILE: ");
-        Serial.print(file.name());
-        Serial.print("\tSIZE: ");
-        Serial.println(file.size());
+        Serial.print("FILE ");
+        Serial.print(file.path());
+        if(size){
+          Serial.print("\tSIZE: ");
+          Serial.print(file.size());
+        }
+        Serial.print("\n");
       }
       file = root.openNextFile();
     }
@@ -113,6 +117,35 @@ public:
       if(debugOutput) Serial.println("## - dir created");
     } else {
       if(debugOutput) Serial.println("## - dir creation failed");
+    }
+  }
+
+  void deleteDir(fs::FS &fs, const char *path){
+    if(debugOutput) Serial.printf("## remove dir: %s\r\n", path);
+    File dir = fs.open(path);
+    if(!dir){
+      if(debugOutput) Serial.println("## - failed to open dir");
+      return;
+    }
+    if(!dir.isDirectory()){
+      if(debugOutput) Serial.println("## - is not a dir");
+      return;
+    }
+    File file = dir.openNextFile();
+    while(file){
+      String subpath = file.path();
+      if(file.isDirectory()){
+        file.close();
+        deleteDir(fs, subpath.c_str());
+      } else {
+        file.close();
+        if(!fs.remove(subpath)){
+          if(debugOutput) Serial.printf("## - Failed to remove %s/n", path);
+        } else {
+          if(debugOutput) Serial.printf("## - Removed %s/n", path);
+        }
+      }
+      file = dir.openNextFile();
     }
   }
 };

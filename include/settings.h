@@ -1,14 +1,14 @@
 #pragma once
 #include <Arduino.h>
-#include <myspiffs.hpp>
+#include <LittleFS.h>
 #include <ArduinoJson.h>
 
 #define SETTINGS_FILE "/config.json"                // on the user partition
 #define SETTINGS_INFO_FILE "/settings/info.json"    // on the device partition
 
 extern JsonDocument settings;
-extern SPIFFS deviceFS;
-extern SPIFFS userFS;
+extern fs::LittleFSFS deviceFS;
+extern fs::LittleFSFS userFS;
 
 void initSettings();
 void storeSettings();

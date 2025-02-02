@@ -8,10 +8,21 @@
 </head>
 <body>
     <h1>Edit %FILENAME%</h1>
+    <div id="payloadFiles"></div>
+
+    <button>
+      <label for="payloadUploadSelector">Upload new file</label>
+    </button>
+    <input type="file" id="payloadUploadSelector" hidden/>
+    <br>
     <button id="save">Save</button>
+    <button id="run">Run</button>
+    <button id="back">Back</button>
+
+
     <form action="#0">
         <div class="grow-wrap">
-          <textarea name="editArea" id="editArea">%FILECONTENT%</textarea>
+          <textarea name="editArea" id="editArea">Press the edit button to edit a file</textarea>
         </div>
       </form>
     <script src="editScript.js"></script>
