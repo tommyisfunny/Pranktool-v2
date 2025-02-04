@@ -39,7 +39,7 @@ Wich opens a new text document in notepad on windows and writes "Hello, world!" 
 
 ### Running payloads
 
-Running a payload will always try to run the script named <payload_name>.dd in the payload's files, so you need to name the file accordingly for your payload to work.
+Running a payload will always try to run the script named <payload_name>.dd in the [payload's files](#file-list), so you need to name the file accordingly for your payload to work.
 You can run payloads by pressing one of the [physical buttons](#buttons) B1 - B4 on the Pranktool after you assinged a payload to this button in the [settings](#settings). 
 You can also run a payload from the [Available payloads list](#available-payloads) on the [Main page](#main-page) or from the [Payload editor](#payload-editor).
 
@@ -120,7 +120,7 @@ The payload editor allows you to edit payloads and its files.
 
 #### File list
 
-Here all files that belong to this payload are listed here.
+All files that belong to this payload are listed here.
 | Button | Action |
 |----|----|
 | Edit | Loads the content of the file into the [text area below](#edit-area) for editing. *Make shure to save the current file if modified!* |

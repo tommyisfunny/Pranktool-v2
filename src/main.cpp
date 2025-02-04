@@ -1,3 +1,10 @@
+/*
+Firmware of the Pranktool, a keystroke injection device
+https://github.com/tommyisfunny/Pranktool-v2
+Copyright (C) 2025  Oliver S.
+*/
+
+
 #include <Arduino.h>
 #include <LittleFS.h>
 #include <debugOut.h>
