@@ -44,10 +44,14 @@ You can also run a payload from the [Available payloads list](#available-payload
 ### How to access the configuration website
 
 1. Plugg the Pranktool into a USB port.
-2. Press the **SETUP** button if **WLAN on boot** isn't enabled
-3. The blue LED should ligth up if **Enable LEDs** is enabled
+2. Press the [**SETUP**](#buttons) button if [**WLAN on boot**](#settings) isn't enabled
+3. The blue LED should ligth up if [**Enable LEDs**](#settings) is enabled
 4. Connect to the WLAN Network. Default name is "*Pranktool*"
-5. Enter the Pranktools IP-address *192.168.4.1* into your browser. There can be problems accessing the website if your device is also connected to a difrent network, for example through an ethernet cable
+5. Enter the Pranktools IP-address *192.168.4.1* into your browser. There can be problems accessing the website if your device is also connected to a difrent network, for example through an ethernet cable.
+
+### Updating the firmware
+
+lorem ipsum
 
 ## Hardware
 
@@ -135,16 +139,10 @@ Modify the contents of files here.
 
 ### Firmware Update page
 
-The Pranktool uses the ElegantOTA library for updating firmware. How to do firmware updates is descriped here.
+The Pranktool uses the ElegantOTA library for updating firmware. How to do firmware updates is descriped [here](#updating-the-firmware).
 
-#### Select File
-
-Select the update file here. *Make shure to select the correct [OTA Mode](#ota-mode) first!*
-
-#### OTA Mode
-
-Selects whether to update the firmware or the filesystem. *Refer to [How to Update]() to select the right one.*
-
-#### Dark UI
-
-Selects between darkmode and ligthmode (only on the update page). ***Keep this setting enabled to prevent damage to your eyes!***
+| Option | Purpose |
+|----|----| 
+| Select File | Select the update file here. *Make shure to select the correct [OTA Mode](#ota-mode) first!* |
+| OTA Mode | Selects whether to update the firmware or the filesystem. *Refer to [How to Update](#updating-the-firmware) to select the right one.* |
+| Dark UI | Selects between darkmode and ligthmode (only on the update page). ***Keep this setting enabled to prevent damage to your eyes!*** |
