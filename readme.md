@@ -6,6 +6,8 @@ The Pranktool is a device to simulate keystrokes on a computer (or any device th
 It pluggs into a USB port and pretends to be a keyboard, just that it can type much faster than a human.
 its suitable for pentesting, for example, or to play a prank on your friends (as the name might suggest).
 
+![image](pics/front.jpeg) ![image](pics/back.jpeg)
+
 ### Disclaimer
 
 ---
