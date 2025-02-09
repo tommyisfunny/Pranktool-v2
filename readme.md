@@ -46,14 +46,24 @@ You can also run a payload from the [Available payloads list](#available-payload
 ### How to access the configuration website
 
 1. Plugg the Pranktool into a USB port.
-2. Press the [**SETUP**](#buttons) button if [**WLAN on boot**](#settings) isn't enabled
-3. The blue LED should ligth up if [**Enable LEDs**](#settings) is enabled
+2. Press the **[SETUP](#buttons)** button if **[WLAN on boot](#settings)** isn't enabled
+3. The blue LED should ligth up if **[Enable LEDs](#settings)** is enabled
 4. Connect to the WLAN Network. Default name is "*Pranktool*"
 5. Enter the Pranktools IP-address *192.168.4.1* into your browser. There can be problems accessing the website if your device is also connected to a difrent network, for example through an ethernet cable.
 
 ### Updating the firmware
 
-lorem ipsum
+1. On the [Main page](#main-page), click on the [update button](#update-firmware).
+2. if you got a **firmware.bin** file:
+2.1. Select *"firmware"* as [OTA Mode](#update-firmware).
+2.2. Click on the [Select file button](#update-firmware) and select your **firmware.bin** file
+2.3. Wait for the file to upload. The Pranktool will restart whenn the upload finished.
+2.4 You maybe need to [reconnect to the Pranktool](#how-to-access-the-configuration-website).
+3. if you got a **littlefs.bin** file:
+3.1. Select *"LittleFS/SPIFFS"* as [OTA Mode](#update-firmware).
+3.2. Click on the [Select file button](#update-firmware) and select your **Littlefs.bin** file
+3.3. Wait for the file to upload. The Pranktool will restart whenn the upload finished.
+3.4 You maybe need to [reconnect to the Pranktool](#how-to-access-the-configuration-website).
 
 ## Hardware
 
