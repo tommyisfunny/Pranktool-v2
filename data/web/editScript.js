@@ -9,6 +9,8 @@ var payloadFilesContainer;
 var textArea;
 var fileUploadInput;
 
+var heading;
+
 var currentFile;
 
 
@@ -20,6 +22,7 @@ window.onload = async ()=>{
     payloadFilesContainer = document.getElementById("payloadFiles");
     textArea = document.getElementById("editArea");
     fileUploadInput = document.getElementById("payloadUploadSelector");
+    heading = document.getElementById("heading");
 
 
     let response = await fetch("/getPayloads");
@@ -28,6 +31,8 @@ window.onload = async ()=>{
     var url = new URL(window.location.href);
     payload = url.searchParams.get("payload");
     payloadFiles = availablePayloads[payload];
+
+    heading.innerHTML = "Edit " + payload;
 
     console.log(payload);
     console.log(availablePayloads);
@@ -42,6 +47,7 @@ window.onload = async ()=>{
 };
 
 function setupTextArea(){
+    textArea.value = "Press the edit button to edit a file";
     textArea.addEventListener("input", () => {
         textArea.parentNode.dataset.replicatedValue = textArea.value;
     });
@@ -66,7 +72,6 @@ function setupSaveButton(){
             body: data
         }).then((response)=>{
                 console.log(response);
-                location.reload();
             }
           ).catch(
             error => console.log(error)
@@ -121,6 +126,7 @@ async function loadFile(file){
     console.log(text);
     textArea.value = text;
     textArea.parentNode.dataset.replicatedValue = text;
+    heading.innerHTML = "Edit " + payload + "/" + file;
 }
 
 function deleteFile(file){
