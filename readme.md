@@ -158,3 +158,80 @@ The Pranktool uses the ElegantOTA library for updating firmware. How to do firmw
 | Select File | Select the update file here. *Make shure to select the correct [OTA Mode](#ota-mode) first!* |
 | OTA Mode | Selects whether to update the firmware or the filesystem. *Refer to [How to Update](#updating-the-firmware) to select the right one.* |
 | Dark UI | Selects between darkmode and ligthmode (only on the update page). ***Keep this setting enabled to prevent damage to your eyes!*** |
+
+# Script language description
+
+The script language used by the Pranktool is similar to Duckyscript tm, but has fewer features.
+The commands are not case-sensitive, the arguments are. 
+Small example:
+
+```
+WIN r
+DELAY 500
+STRING cmd
+ENTER
+DELAY 500
+STRING echo hello world!
+ENTER
+DELAY 2000
+ALT F4
+```
+
+## List of available commands
+
+### STRING
+`STRING <text>`
+types the given text.
+
+### PASTE
+`PASTE <file>`
+types the content of the given file. The file needs to be in the same payload as the script.
+
+### Standalone keys
+`<key> [<key2>, <key3>, ...]`
+Presses the given key. You can also specify multiple keys to be pressed together, for Example: `CTRL ALT DEL`
+The following keys are available: 
+|Name|Key|
+|----|----|
+|`ALT`| Alt |
+|`END`| End |
+|`F1` - `F24`| Function keys |
+|`GUI`| GUI key |
+|`TAB`| Tabulator |
+|`AKUT`| ` |
+|`HOME`| Home key |
+|`ALTGR`| Alt gr |
+|`ENTER`| Enter |
+|`PAUSE`| Pause key |
+|`SHIFT`| Shift |
+|`APPLICATION`| Application key |
+|`BACKSPACE`| Backspace |
+|`CAPS_LOCK`| Capslock |
+|`COMMAND`| Same as GUI |
+|`CTRL`| Control |
+|`DEL`| Delete |
+|`DOWN`| Down arrow |
+|`ESC`| Escape |
+|`ESZETT`| ß |
+|`GRAVIS`| ´ |
+|`INSERT`| Insert key |
+|`LEFT_ALT`| Left alt |
+|`LEFT`| Left arrow |
+|`LEFT_CTRL`| Left Control |
+|`LEFT_GUI`| Left GUI |
+|`LEFT_SHIFT`| Left Shift |
+|`OPTION`| Option key, same as left alt |
+|`PAGE_DOWN`| Page down |
+|`PAGE_UP`| Page up |
+|`PERIOD`| . |
+|`PRINT_SCREEN`| Print screen key |
+|`RETURN`| return, same as ENTER |
+|`RIGHT_ALT`| Right alt |
+|`RIGHT`| Right arrow |
+|`RIGHT_CTRL`| Right control |
+|`RIGHT_GUI`| Right GUI |
+|`RIGHT_SHIFT`| Rigth shift |
+|`SCROLL_LOCK`| Scroll lock key |
+|`UP`| Up arrow |
+|`WIN`| Windows key, same as GUI |
+|`ZIRKUMFLEX`| ^ |
