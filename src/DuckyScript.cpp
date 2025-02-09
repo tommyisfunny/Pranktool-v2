@@ -50,8 +50,7 @@ void DuckyScript::parseLine(String line){
     } else {
         command = line.substring(0, i);
 
-        arg = line.substring(i);
-        arg.trim();
+        arg = line.substring(i + 1);
     }
 
     String lowerCmd = command;
@@ -88,9 +87,18 @@ void DuckyScript::string(String arg){
 
 void DuckyScript::setLED(String arg){
     arg.toLowerCase();
-    if(arg == "on") digitalWrite(L_USER, HIGH);
-    if(arg == "off") digitalWrite(L_USER, LOW);
-    if(arg == "toggle") digitalWrite(L_USER, !digitalRead(L_USER));
+    if(arg == "on"){
+        digitalWrite(L_USER, HIGH);
+        debugOutln("User LED ON");
+    } 
+    if(arg == "off"){
+        digitalWrite(L_USER, LOW);
+        debugOutln("User LED OFF");
+    } 
+    if(arg == "toggle"){
+        digitalWrite(L_USER, !digitalRead(L_USER));
+        debugOutln("User LED toggle");
+    } 
 }
 
 void DuckyScript::pasteFile(String arg){

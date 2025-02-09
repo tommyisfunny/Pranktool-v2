@@ -119,8 +119,8 @@ void setupWlan(){
     //const char* password = "test1234";
     //bool hidden = false;
 
-    if(password) WiFi.softAP(ssid, NULL    , 1, hidden?1:0);
-    else         WiFi.softAP(ssid, password, 1, hidden?1:0);
+    if(password == "") WiFi.softAP(ssid, NULL    , 1, hidden?1:0);
+    else               WiFi.softAP(ssid, password, 1, hidden?1:0);
 
     IPAddress IP = WiFi.softAPIP();
     debugOut("AP IP address: ");
