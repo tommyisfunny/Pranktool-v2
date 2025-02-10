@@ -1,12 +1,8 @@
 GUI r
 DELAY 100
-STRING cmd
-ENTER
+STRINGLN cmd
 DELAY 500
-STRING color 02 && echo off
-ENTER
-STRING cls
-ENTER
+STRINGLN color 02 && echo off
+STRINGLN cls
 F11
-STRING tree C: && tree G: && tree H: && exit
-ENTER
+STRINGLN tree C: && tree G: && tree H: && exit

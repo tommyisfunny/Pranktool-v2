@@ -21,6 +21,8 @@ class DuckyScript{
         String payloadDir;
         String currentPayload;
 
+        int repitions;
+
         void parseLine(String line);
         
         void _delay(String arg);

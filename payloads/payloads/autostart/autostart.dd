@@ -1,15 +1,10 @@
 GUI r
 DELAY 100
-STRING cmd
-ENTER
+STRINGLN cmd
 DELAY 500
-STRING cd %USERPROFILE%/AppData/Roaming/Microsoft/Windows/Start Menu/Programs/Startup
-ENTER
-STRING copy con x.bat
-ENTER
-STRING echo off && cls && echo moin && timeout -t 2 -nobreak >> NUL && exit
-ENTER
+STRINGLN cd %USERPROFILE%/AppData/Roaming/Microsoft/Windows/Start Menu/Programs/Startup
+STRINGLN copy con x.bat
+STRINGLN echo off && cls && echo moin && timeout -t 2 -nobreak >> NUL && exit
 CTRL z
 ENTER
-STRING exit
-ENTER
+STRINGLN exit

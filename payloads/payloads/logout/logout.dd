@@ -1,35 +1,15 @@
 WIN r
 DELAY 200
-STRING notepad
-ENTER
+STRINGLN notepad.exe
 DELAY 600
-STRING Lock your computer when you walk away
-ENTER
-STRING Lock your computer when you walk away
-ENTER
-STRING Lock your computer when you walk away
-ENTER
-STRING Lock your computer when you walk away
-ENTER
-STRING Lock your computer when you walk away
-ENTER
-STRING Lock your computer when you walk away
-ENTER
-STRING Lock your computer when you walk away
-ENTER
-STRING Lock your computer when you walk away
-ENTER
-STRING Lock your computer when you walk away
-ENTER
-STRING Lock your computer when you walk away
-ENTER
-STRING Lock your computer when you walk away
-ENTER
-STRING Lock your computer when you walk away
-ENTER
-STRING Lock your computer when you walk away
-ENTER
-STRING Lock your computer when you walk away
-ENTER
+STRINGLN Lock your computer when you walk away
+STRINGLN Lock your computer when you walk away
+STRINGLN Lock your computer when you walk away
+STRINGLN Lock your computer when you walk away
+STRINGLN Lock your computer when you walk away
+STRINGLN Lock your computer when you walk away
+STRINGLN Lock your computer when you walk away
+STRINGLN Lock your computer when you walk away
+STRINGLN Lock your computer when you walk away
 STRING Thank you.
 GUI L

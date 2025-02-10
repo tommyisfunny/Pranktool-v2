@@ -8,6 +8,7 @@ FileHelper fileHelper;
 DuckyScript::DuckyScript(){
     standartDelay = 1;
     currentPayload = "";
+    repitions = 1;
 }
 
 void DuckyScript::begin(FS &fs, const char* payloadDir){
@@ -23,6 +24,8 @@ void DuckyScript::run(String payload){
     String fullPath = payloadDir + "/" + payload + "/" + payload + ".dd";
     debugOutln("Running " + fullPath);
     currentPayload = payload;
+
+    repitions = 1;
 
     File file = fs->open(fullPath, "r");
     String line = "";
@@ -41,6 +44,7 @@ void DuckyScript::run(String payload){
 
 void DuckyScript::parseLine(String line){
     line.trim();
+
     u_int8_t i = line.indexOf(' ');
     String command = "";
     String arg = " ";
@@ -59,21 +63,34 @@ void DuckyScript::parseLine(String line){
     //debugOutln("Command: " + command);
     //debugOutln("Arg: " + arg);
 
-    if     (lowerCmd == "delay") this->_delay(arg);
-    else if(lowerCmd == "string") this->string(arg);
-    else if(lowerCmd == "led") setLED(arg);
-    else if(lowerCmd == "paste") pasteFile(arg);
-    else {
-        int keycode = findSpecialKey(command); 
-        if(keycode != -1){
-            this->specialKey(keycode, arg);
-        } else {
-            if(settings["LEDSENABLED"]) digitalWrite(L_ERR, HIGH);
-            debugOutln("Command: " + command);
-            debugOutln("Arg: " + arg);
-            debugOutln("Not Found");
+    bool repeat = false;
+
+    for(; repitions != 0; repitions--){
+        if     (lowerCmd == "delay") this->_delay(arg);
+        else if(lowerCmd == "string") this->string(arg);
+        else if(lowerCmd == "stringln") this->string(arg + "\n") ;
+        else if(lowerCmd == "led") setLED(arg);
+        else if(lowerCmd == "paste") pasteFile(arg);
+        else if(lowerCmd == "rem") /* Nothing */;
+        else if(lowerCmd == "repeat") {
+            repitions = arg.toInt();
+            repeat = true;
+            break;
+        }
+        else {
+            int keycode = findSpecialKey(command); 
+            if(keycode != -1){
+                this->specialKey(keycode, arg);
+            } else {
+                if(settings["LEDSENABLED"]) digitalWrite(L_ERR, HIGH);
+                debugOutln("Command: " + command);
+                debugOutln("Arg: " + arg);
+                debugOutln("Not Found");
+            }
         }
     }
+
+    if(!repeat) repitions = 1;
 }
 
 void DuckyScript::_delay(String arg){

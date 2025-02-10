@@ -168,24 +168,42 @@ Small example:
 ```
 WIN r
 DELAY 500
-STRING cmd
-ENTER
+STRINGLN cmd
 DELAY 500
-STRING echo hello world!
-ENTER
+STRINGLN echo hello world!
 DELAY 2000
 ALT F4
 ```
 
 ## List of available commands
 
+### REM
+`REM <text>`
+Starts a comment. Will be ignored.
+
 ### STRING
 `STRING <text>`
-types the given text.
+Types the given text.
+
+### STRINGLN
+`STRINGLN <text>`
+Types the given text with a carriage return (`ENTER`) at the end.
+
+### REPEAT
+`REPEAT <amount>`
+Repeats the following command the given number of times
+
+### DELAY
+`DELAY <milliseconds>`
+Waits for the given amount of milliseconds.
 
 ### PASTE
 `PASTE <file>`
-types the content of the given file. The file needs to be in the same payload as the script.
+Types the content of the given file. The file needs to be in the same payload as the script.
+
+### LED
+`LED <on|off|toggle>`
+Controlls the user LED on the Pranktool. Currently doesnt work.
 
 ### Standalone keys
 `<key> [<key2>, <key3>, ...]`
@@ -232,6 +250,8 @@ The following keys are available:
 |`RIGHT_GUI`| Right GUI |
 |`RIGHT_SHIFT`| Rigth shift |
 |`SCROLL_LOCK`| Scroll lock key |
+|`NUMLOCK`| Num lock |
+|`SPACE`| Space bar |
 |`UP`| Up arrow |
 |`WIN`| Windows key, same as GUI |
 |`ZIRKUMFLEX`| ^ |

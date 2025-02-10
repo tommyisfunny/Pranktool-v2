@@ -61,7 +61,7 @@ const SPECIAL_KEY specialKeys[] = {
     {"KEYPAD_FOUR", 0x5c},
     {"KEYPAD_MINUS", 0x56},
     {"KEYPAD_NINE", 0x61},
-    {"KEYPAD_NUMLOCK", 0x53},
+    {"NUMLOCK", 0x53},
     {"KEYPAD_ONE", 0x59},
     {"KEYPAD_PERIOD", 0x63},
     {"KEYPAD_PLUS", 0x57},
@@ -88,6 +88,7 @@ const SPECIAL_KEY specialKeys[] = {
     {"RIGHT_GUI", 0xe7},
     {"RIGHT_SHIFT", 0xe5},
     {"SCROLL_LOCK", 0x47},
+    {"SPACE", 0x2c},
     {"UP", 0x52},
     {"WIN", 0xe3},
     {"ZIRKUMFLEX", 0x35}
