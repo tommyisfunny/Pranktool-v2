@@ -62,10 +62,9 @@ function setupSaveButton(){
         var textField = document.getElementById("editArea");
 
         var blob = new Blob([textField.value], {type: 'text/plain'});
-        var file = new File([blob], fileName, {type: "text/plain"});
 
         var data = new FormData();
-        data.append('file', file);
+        data.append('file', blob, fileName);
         
         fetch("/uploadFile?path=" + payload + "/", {
             method: "POST",

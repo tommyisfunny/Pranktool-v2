@@ -19,7 +19,7 @@ window.onload = async function (){
     }
 
     var createPayloadButton = document.getElementById("create");
-    createPayloadButton.onclick = function (){
+    createPayloadButton.addEventListener("click", ()=> {
         var payloadName = document.getElementById("newPayloadName").value;
 
         if(payloadName.length == 0){
@@ -30,7 +30,7 @@ window.onload = async function (){
         fetch("/createPayload?name=" + payloadName).then(()=>{
             location.href = "/edit.html?payload=" + payloadName;
         });
-    }
+    });
 
     updateButton.onclick = function (){
         location.href = "/update";
