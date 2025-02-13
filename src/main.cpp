@@ -27,7 +27,7 @@ fs::LittleFSFS deviceFS;
 
 
 void setupio() {
-  for(int i = 11; i < 14; i++) pinMode(i, OUTPUT);
+  for(int i = 11; i <= 14; i++) pinMode(i, OUTPUT);
 
   pinMode(B_1, INPUT_PULLUP);
   pinMode(B_2, INPUT_PULLUP);
@@ -60,11 +60,11 @@ void printLittleFSInfo(fs::LittleFSFS &fs){
 }
 
 void setupLittleFS(){
-  if(!userFS.begin(false, "/userData", 10, "userData")){
+  if(!userFS.begin(true, "/userData", 10, "userData")){
     debugOutln("Failed to mount user SPIFFS");
     return;
   }
-  if(!deviceFS.begin(false, "/deviceData", 10, "deviceData")){
+  if(!deviceFS.begin(true, "/deviceData", 10, "deviceData")){
     debugOutln("Failed to mount device SPIFFS");
     return;
   }
