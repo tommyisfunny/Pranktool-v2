@@ -59,13 +59,13 @@ def after_build(source, target, env):
     print("After build")
     firmware_build_no, fs_build_no = get_and_update_build_number(0, 0)
     builddir = env.subst("$BUILD_DIR")
-    os.rename(os.path.join(builddir, "firmware.bin"), os.path.join(builddir, "firmware_" + VERSION + str(firmware_build_no) + ".bin"))
+    os.rename(os.path.join(builddir, "firmware.bin"), os.path.join(builddir, "firmware_v" + VERSION + str(firmware_build_no) + ".bin"))
 
 def after_fsbuild(source, target, env):
     print("After filesystem build")
     firmware_build_no, fs_build_no = get_and_update_build_number(0, 0)
     builddir = env.subst("$BUILD_DIR")
-    os.rename(os.path.join(builddir, "littlefs.bin"), os.path.join(builddir, "filesystem_" + VERSION +  str(fs_build_no) + ".bin"))
+    os.rename(os.path.join(builddir, "littlefs.bin"), os.path.join(builddir, "filesystem_v" + VERSION +  str(fs_build_no) + ".bin"))
 
 env.AddPreAction("$BUILD_DIR/src/version.cpp.o", before_build)
 env.AddPreAction("$BUILD_DIR/${ESP32_FS_IMAGE_NAME}.bin", before_fsbuild)
