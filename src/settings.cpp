@@ -93,3 +93,10 @@ void applyFallbackSettings(){
   settings["LEDSENABLED"] = true;
   storeSettings();
 }
+
+String getFirmwareVersion(){
+  return String(VERSION);
+}
+String getCompileDate(){
+  return String(COMPILE_DATE);
+}

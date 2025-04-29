@@ -25,7 +25,6 @@ extern fs::LittleFSFS deviceFS;
 
 String editPayload = "";
 
-
 AsyncWebServer server(80);
 
 void handleUpload(AsyncWebServerRequest *request, String filename, size_t index, uint8_t *data, size_t len, bool final) {
@@ -259,6 +258,17 @@ void setupWlan(){
 
         request->send(200, "plain/text", "ok");
     });
+
+    server.on("/getFirmwareVersion", HTTP_GET, [] (AsyncWebServerRequest *request) {
+      debugOutln("get firmware version request:");
+      String data = "{\n\"version\": \"" + getFirmwareVersion() + "\",\n\"date\": \"" + getCompileDate() + "\"\n}";
+      request->send(200, "application/json", data);
+    });
+
+    server.on("/getFSVersion", HTTP_GET, [] (AsyncWebServerRequest *request) {
+      debugOutln("get Filesystem version request:");
+      request->send(deviceFS, "/settings/version.json");
+  });
 
     server.serveStatic("/", deviceFS, "/web/").setCacheControl("no-cache, no-store, must-revalidate");
 

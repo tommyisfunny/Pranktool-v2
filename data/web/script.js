@@ -1,11 +1,13 @@
 import { handleSettings } from "./settings.js";
 import { handlePayloads } from "./payloads.js";
+import { handleVersions } from "./versions.js";
 
 window.onload = async function (){
     var updateButton = document.getElementById("update");
 
     handleSettings();
     handlePayloads();
+    handleVersions();
 
     var createPayloadDialog = document.getElementById("createPayloadDialog");
 
