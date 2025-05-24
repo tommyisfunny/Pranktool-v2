@@ -10,6 +10,8 @@ Copyright (C) 2025  Oliver S.
 #include <debugOut.h>
 #include <FileHelper.h>
 
+
+
 extern FileHelper fileHelper;
 
 bool wlanActive = false;
@@ -75,6 +77,8 @@ void setupLittleFS(){
 
   fileHelper.listDir(userFS, "/");
   fileHelper.listDir(deviceFS, "/");
+
+  userFS.mkdir("/tmp");
 }
 
 
@@ -102,7 +106,6 @@ void setup() {
 
   initSettings();
 
-
   duckyScript.setStandartDelay(settings["STANDARTDELAY"]);
 
   if(digitalRead(B_DARUN) && settings["AUTOSTART"] != "OFF")
@@ -110,7 +113,7 @@ void setup() {
     if(settings["LEDSENABLED"]) digitalWrite(L_OK, HIGH);
     duckyScript.run(settings["AUTOSTART"].as<String>());
     if(settings["LEDSENABLED"]) digitalWrite(L_OK, LOW);
-  } 
+  }
   if(settings["WLANONBOOT"]){
     setupWlan();
     wlanActive = true;

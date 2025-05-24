@@ -13,6 +13,8 @@ var heading;
 
 var currentFile;
 
+var fileSavedDialog;
+
 
 window.onload = async ()=>{
     saveButton = document.getElementById("save");
@@ -24,6 +26,7 @@ window.onload = async ()=>{
     fileUploadInput = document.getElementById("payloadUploadSelector");
     heading = document.getElementById("heading");
 
+    fileSavedDialog = document.getElementById("fileSavedDialog");
 
     let response = await fetch("/getPayloads");
     var availablePayloads = await response.json();
@@ -75,6 +78,12 @@ function setupSaveButton(){
           ).catch(
             error => console.log(error)
           );
+        
+        fileSavedDialog.showModal();
+        setTimeout(() => {
+            fileSavedDialog.close();
+            loadFile(currentFile);
+        }, 1000);
     });
 }
 

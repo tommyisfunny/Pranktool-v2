@@ -2,6 +2,7 @@
     "files.associations": {
         "cctype": "cpp",
         "*.tcc": "cpp",
-        "fstream": "cpp"
+        "fstream": "cpp",
+        "typeinfo": "cpp"
     }
 }
