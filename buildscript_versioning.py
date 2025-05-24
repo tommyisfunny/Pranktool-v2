@@ -7,7 +7,7 @@ FILENAME_BUILDNO = 'versioning'
 FILENAME_VERSION_H = 'include/version.h'
 FILENAME_VERSION_JSON = 'data/settings/version.json'
 
-VERSION = "1.0."
+VERSION = "1.1."
 
 tm = datetime.datetime.today()
 date = str(tm.year)[-4:]+'-'+('0'+str(tm.month))[-2:]+'-'+('0'+str(tm.day))[-2:]
